@@ -153,8 +153,71 @@ import { auth, db } from "../firebaseConfig";
     };
   
     return (
-        <></>
-    )
+      <div className="row g-0">
+      <div
+        className="col-2 col-md-4 users_container"
+        style={{ borderRight: "1px solid #ddd" }}
+      >
+        {users.map((user, i) => (
+          <User
+            key={i}
+            user={user}
+            selectUser={selectUser}
+            chat={chat}
+            online={online}
+            user1={user1}
+          />
+        ))}
+      </div>
+      <div className="col-10 col-md-8 position-relative">
+        {chat ? (
+          <>
+            <div
+              className="text-center mt-1"
+              style={{ borderBottom: "1px solid #ddd" }}
+            >
+              <h3>{chat.other.name}</h3>
+            </div>
+            <div className="p-2" style={{ borderBottom: "1px solid #ddd" }}>
+              <div className="d-flex align-items-center">
+                <img
+                  src={chat.ad.images[0]?.url}
+                  alt={chat.ad.title}
+                  style={{ width: "50px", height: "50px" }}
+                />
+                <div className="d-flex align-items-center justify-content-between flex-grow-1 ms-1">
+                  <div>
+                    <h6>{chat.ad.title}</h6>
+                    <small>{chat.ad.price}</small>
+                  </div>
+                  <Link
+                    className="btn btn-secondary btn-sm"
+                    to={`/${chat.ad.category.toLowerCase()}/${chat.ad.adId}`}
+                  >
+                    View Post
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="messages overflow-auto">
+              {msgs.map((msg, i) => (
+                <Message key={i} msg={msg} user1={user1} />
+              ))}
+            </div>
+            <MessageForm
+              text={text}
+              setText={setText}
+              handleSubmit={handleSubmit}
+            />
+          </>
+        ) : (
+          <div className="text-center mt-5">
+            <h3>Select a user to start conversation</h3>
+          </div>
+        )}
+      </div>
+    </div>
+    );
   };
   
   export default Chat;
