@@ -1,0 +1,21 @@
+.form {
+  max-width: 576px;
+  margin: auto;
+}
+
+.card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.users_container {
+  height: 90vh;
+}
+
+.gray {
+  background-color: #ddd;
+}
+
+.messages {
+  height: calc(100vh - 220px);
+}
