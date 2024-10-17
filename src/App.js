@@ -12,6 +12,7 @@ import MyFavorites from "./pages/MyFavorites";
 import Ad from "./pages/Ad";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import Chat from "./pages/Chat";
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/sell" element={<Sell />} />
             <Route path="/favorites" element={<MyFavorites />} />
+            <Route path="/Chat" element={<Chat />} />
           </Route>
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/login" element={<Login />} />
