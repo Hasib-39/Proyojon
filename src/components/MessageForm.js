@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/Messageform.css";
 
 const MessageForm = ({ text, setText, handleSubmit }) => {
   return (
@@ -9,10 +10,9 @@ const MessageForm = ({ text, setText, handleSubmit }) => {
       <input
         type="text"
         className="form-control"
-        placeholder="Write your message"
+        placeholder="Type here..."
         value={text}
         onChange={(e) => setText(e.target.value)}
-        style={{ width: "100%" }}
       />
     </form>
   );
