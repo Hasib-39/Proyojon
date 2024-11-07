@@ -13,11 +13,12 @@ import {
   where,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
-import { auth, db } from "../firebaseConfig";
-import User from "../components/User";
+import { Link, useLocation } from "react-router-dom";
 import Message from "../components/Message";
 import MessageForm from "../components/MessageForm";
+import User from "../components/User";
+import { auth, db } from "../firebaseConfig";
+import "../styles/Chat.css";
 
 
 
@@ -161,7 +162,6 @@ const Chat = () => {
     <div className="row g-0">
       <div
         className="col-2 col-md-4 users_container"
-        style={{ borderRight: "1px solid #ddd" }}
       >
         {users.map((user, i) => (
           <User
@@ -174,25 +174,24 @@ const Chat = () => {
           />
         ))}
       </div>
-      <div className="col-10 col-md-8 position-relative">
+      <div className="col-10 col-md-8 position-relative chat-inbox">
         {chat ? (
           <>
             <div
-              className="text-center mt-1"
-              style={{ borderBottom: "1px solid #ddd" }}
+              className="text-center mt-1 user2-container"
             >
-              <h3>{chat.other.name}</h3>
+              <h3 className="user2-title">{chat.other.name}</h3>
             </div>
-            <div className="p-2" style={{ borderBottom: "1px solid #ddd" }}>
+            <div className="p-2 user2-container">
               <div className="d-flex align-items-center">
                 <img
                   src={chat.ad.images[0]?.url}
                   alt={chat.ad.title}
-                  style={{ width: "50px", height: "50px" }}
+                  className="img-thumbnail"
                 />
                 <div className="d-flex align-items-center justify-content-between flex-grow-1 ms-1">
                   <div>
-                    <h6>{chat.ad.title}</h6>
+                    <h6 className="ad-title">{chat.ad.title}</h6>
                     <small>{chat.ad.price}</small>
                   </div>
                   <Link

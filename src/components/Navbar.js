@@ -1,9 +1,10 @@
+import { signOut } from 'firebase/auth';
+import { doc, updateDoc } from 'firebase/firestore';
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth';
-import { doc, updateDoc } from 'firebase/firestore';
-import { signOut } from 'firebase/auth';
 import { auth, db } from '../firebaseConfig';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
     const { user, unread } = useContext(AuthContext);  // Access user and unread from context
@@ -31,7 +32,7 @@ const Navbar = () => {
                     <img
                         src="/প্রয়োজন_Arin.png"
                         alt="Logo"
-                        style={{ width: '150px', marginRight: '20px' }} // Adjust width and margin as needed
+                        className="logo-image"
                     />
                 </Link>
                 <button
@@ -75,7 +76,7 @@ const Navbar = () => {
                                         My Favourites
                                     </Link>
                                 </li>
-                                <button className="btn btn-danger btn-sm" onClick={handleSignout}>
+                                <button className="logout-btn" onClick={handleSignout}>
                                     Log out
                                 </button>
                             </>
