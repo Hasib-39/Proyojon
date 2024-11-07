@@ -216,7 +216,7 @@ const Chat = () => {
           </>
         ) : (
           <div className="text-center mt-5">
-            <h3>Select a user to start conversation</h3>
+            <h3 className="user2-title">Select a user to start conversation</h3>
           </div>
         )}
       </div>

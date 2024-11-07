@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
+import "../styles/User.css";
 import useSnapshot from "../utils/useSnapshot";
 
 const User = ({ user, selectUser, chat, online, user1 }) => {
@@ -27,7 +28,7 @@ const User = ({ user, selectUser, chat, online, user1 }) => {
         <img
           src={user.other.photoUrl}
           alt={user.name}
-          style={{ width: "50", height: "50px", borderRadius: "50%" }}
+          className="user2-img"
         />
       ) : (
         <FaUserCircle size={50} />
@@ -44,12 +45,12 @@ const User = ({ user, selectUser, chat, online, user1 }) => {
         className={`${online[user.other.uid] ? "bg-success" : "bg-danger"}`}
       ></span>
       <div className="d-none d-md-inline-flex flex-column ms-2">
-        <h6>
-          {user.other.name}
+        <h6 >
+          <span className="user2-name">{user.other.name}</span>
           <br />
-          {user.ad.title}
+         <span className="user2-ad-name"> {user.ad.title}</span>
         </h6>        
-        <small>
+        <small className="user-text">
           {val?.lastText?.length > 30
             ? val?.lastText.slice(0, 30)
             : val?.lastText}
