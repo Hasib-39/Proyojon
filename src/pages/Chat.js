@@ -23,7 +23,7 @@ import "../styles/Chat.css";
 
 
 const Chat = () => {
-  const [chat, setChat] = useState([]);
+  const [chat, setChat] = useState(null);
   const [text, setText] = useState("");
   const [users, setUsers] = useState([]);
   const [msgs, setMsgs] = useState([]);
