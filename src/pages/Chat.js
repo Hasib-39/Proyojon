@@ -13,6 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import Message from "../components/Message";
 import MessageForm from "../components/MessageForm";
@@ -20,10 +21,8 @@ import User from "../components/User";
 import { auth, db } from "../firebaseConfig";
 import "../styles/Chat.css";
 
-
-
 const Chat = () => {
-  const [chat, setChat] = useState([]);
+  const [chat, setChat] = useState(null);
   const [text, setText] = useState("");
   const [users, setUsers] = useState([]);
   const [msgs, setMsgs] = useState([]);
@@ -64,11 +63,9 @@ const Chat = () => {
     const buyer = await getDoc(doc(db, "users", user1));
     const seller = await getDoc(doc(db, "users", ad.postedBy));
     setChat({ ad, me: buyer.data(), other: seller.data() });
-    // Set up listener for ad changes
     const adRef = doc(db, "ads", ad.adId);
     const unsubAd = onSnapshot(adRef, async (adSnap) => {
       if (!adSnap.exists()) {
-        // Ad is deleted, delete the chat
         const chatId =
           user1 > ad.postedBy
             ? `${user1}.${ad.postedBy}.${ad.adId}`
@@ -161,9 +158,7 @@ const Chat = () => {
   return (
     <div className="row g-0">
       <div className="headline">Chats</div>
-      <div
-        className="col-2 col-md-2 users_container"
-      >
+      <div className="col-2 col-md-2 users_container">
         {users.map((user, i) => (
           <User
             key={i}
@@ -179,33 +174,16 @@ const Chat = () => {
         {chat ? (
           <>
             <div className="text-center mt-1 user2-container">
-              {/* <img
-                src={chat.other?.photoUrl}
-                alt={chat.other?.name || "User"} 
+              {chat.other.photoUrl ? (
+              <img
+                src={chat.other.photoUrl}
+                alt={chat.other.name}
                 className="user2-img"
               />
-              <h3 className="user2-title">{chat.other?.name || "Unknown User"}</h3> */}
-            </div>
-            <div className="p-2 user2-container">
-              <div className="d-flex align-items-center">
-                <img
-                  src={chat.ad.images[0]?.url}
-                  alt={chat.ad.title}
-                  className="img-thumbnail"
-                />
-                <div className="d-flex align-items-center justify-content-between flex-grow-1 ms-1">
-                  <div>
-                    <h6 className="ad-title">{chat.ad.title}</h6>
-                    <small>{chat.ad.price}</small>
-                  </div>
-                  <Link
-                    className="btn btn-secondary btn-sm"
-                    to={`/${chat.ad.category.toLowerCase()}/${chat.ad.adId}`}
-                  >
-                    View Post
-                  </Link>
-                </div>
-              </div>
+              ):(
+                <FaUserCircle size={50} />
+              )}
+              <h3 className="user2-title">{chat.other.name}</h3>
             </div>
             <div className="messages overflow-auto">
               {msgs.map((msg, i) => (
@@ -225,13 +203,43 @@ const Chat = () => {
         )}
       </div>
       <div className="col-3 col-md-3 position-relative chat-info">
-        {/* <img
-          src={chat.other?.photoUrl}
-          alt={chat.name}
-          className="user2-img-3c"
-        />
-        <br />
-        <h3 className="chat-title">{chat.other?.name || "Unknown User"}</h3> */}
+        {chat && (
+          <>
+            {chat.other.photoUrl ? (
+              <img
+                src={chat.other.photoUrl}
+                alt={chat.other.name}
+                className="user2-img"
+              />
+              ):(
+                <FaUserCircle size={50} />
+            )}
+            <h3 className="chat-title mt-2">{chat.other.name}</h3>
+            <small className={`${online[chat.other.uid] ? "online" : "offline"}`}>
+              {online[chat.other.uid] ? "Active now" : "Offline"}
+            </small>
+            <br />
+            <div className="ad-details text-center mt-3">
+              <div className="p-2 user2-container">
+                <img
+                  src={chat.ad.images[0]?.url}
+                  alt={chat.ad.title}
+                  className="img-thumbnail mb-2"
+                />
+              </div>
+              <div>
+                <h6 className="ad-title mb-1">{chat.ad.title}</h6>
+                <small className="text-muted">{chat.ad.price}</small>
+              </div>
+              <Link
+                className="btn btn-secondary btn-sm mt-2"
+                to={`/${chat.ad.category.toLowerCase()}/${chat.ad.adId}`}
+              >
+                View Post
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
