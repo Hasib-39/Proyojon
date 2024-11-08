@@ -33,3 +33,9 @@
     font-size: 1rem;
     color: #959595;
 }
+
+.unread{
+    font-family: 'Inter';
+    color: #FFAD60;
+    font-weight: bold;
+}

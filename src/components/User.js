@@ -20,7 +20,7 @@ const User = ({ user, selectUser, chat, online, user1 }) => {
         user.ad.title === chat?.ad.title && user.other.name === chat?.other.name
           ? "gray"
           : ""
-      }  ${val?.lastSender !== user1 && val?.lastUnread ? "bg-info" : ""}`}
+      }  ${val?.lastSender !== user1 && val?.lastUnread ? "unread" : ""}`}
       onClick={() => selectUser(user)}
       style={{ cursor: "pointer", position: "relative" }}
     >
