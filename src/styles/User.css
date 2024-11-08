@@ -33,3 +33,9 @@
     font-size: 1rem;
     color: #959595;
 }
+
+
+.unread{
+    color: #ffb774;
+    font-weight: bold;
+}
