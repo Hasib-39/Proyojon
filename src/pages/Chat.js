@@ -23,7 +23,7 @@ import "../styles/Chat.css";
 
 
 const Chat = () => {
-  const [chat, setChat] = useState(null);
+  const [chat, setChat] = useState([]);
   const [text, setText] = useState("");
   const [users, setUsers] = useState([]);
   const [msgs, setMsgs] = useState([]);
@@ -160,8 +160,9 @@ const Chat = () => {
 
   return (
     <div className="row g-0">
+      <div className="headline">Chats</div>
       <div
-        className="col-2 col-md-4 users_container"
+        className="col-2 col-md-2 users_container"
       >
         {users.map((user, i) => (
           <User
@@ -174,13 +175,16 @@ const Chat = () => {
           />
         ))}
       </div>
-      <div className="col-10 col-md-8 position-relative chat-inbox">
+      <div className="col-6 col-md-6 position-relative chat-inbox">
         {chat ? (
           <>
-            <div
-              className="text-center mt-1 user2-container"
-            >
-              <h3 className="user2-title">{chat.other.name}</h3>
+            <div className="text-center mt-1 user2-container">
+              {/* <img
+                src={chat.other?.photoUrl}
+                alt={chat.other?.name || "User"} 
+                className="user2-img"
+              />
+              <h3 className="user2-title">{chat.other?.name || "Unknown User"}</h3> */}
             </div>
             <div className="p-2 user2-container">
               <div className="d-flex align-items-center">
@@ -219,6 +223,15 @@ const Chat = () => {
             <h3 className="user2-title">Select a user to start conversation</h3>
           </div>
         )}
+      </div>
+      <div className="col-3 col-md-3 position-relative chat-info">
+        {/* <img
+          src={chat.other?.photoUrl}
+          alt={chat.name}
+          className="user2-img-3c"
+        />
+        <br />
+        <h3 className="chat-title">{chat.other?.name || "Unknown User"}</h3> */}
       </div>
     </div>
   );

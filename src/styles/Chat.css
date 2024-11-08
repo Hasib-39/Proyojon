@@ -6,6 +6,8 @@
     background-color: #F0F0F0;
     padding: 0.7rem;
     max-width: 25%;
+    border-radius: 10px;
+    margin: 1rem;
 }
 
 .user2-title{
@@ -24,6 +26,8 @@
     border-bottom: 2px solid #D9D9D9;
     padding-bottom: 5px;
     margin: 1.25rem 1.25rem;
+    display: flex;
+    align-items: center;
 }
 
 .btn-secondary{
@@ -31,6 +35,8 @@
     border: none;
     font-family: 'Inter';
     font-size: 0.9rem;
+    margin-left: 2rem;
+    margin-bottom: 1rem;
 }
 
 .btn-secondary:hover{
@@ -58,7 +64,51 @@
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
+    max-width: 50%;
 }
 
+.headline{
+    font-family: 'Inter';
+    font-weight: bold;
+    font-size: 2.25rem;
+    text-align: start;
+    margin-left: 1rem;
+}
 
+.active{
+    color: rgb(0, 203, 122);
+    font-family: 'Inter';
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.user2-img{
+    width: 50px; /* Adjust the width as needed */
+    height: 50px;
+    border-radius: 50%; /* Makes the image circular */ /* Makes the image circular */
+}
+
+.user2-img-3c{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.chat-info{
+    display: flex;
+    flex-direction: column; /* Stacks the image above the text */
+    align-items: center; /* Centers items horizontally */
+    text-align: center; /* Centers text */ /* Centers text */
+}
+
+.chat-title{
+    font-family: 'Inter';
+    font-weight: bold;
+    font-size: 1.75rem;
+    text-align: start;
+}
+
+.chat-title::first-letter{
+    text-transform: uppercase;
+}
 

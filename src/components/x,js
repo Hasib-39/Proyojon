@@ -1,0 +1,6 @@
+              <img
+                src={chat.other.photoUrl}
+                alt={chat.other.name}
+                className="user2-img"
+              />
+              <h3 className="user2-title">{chat.other.name}</h3>
