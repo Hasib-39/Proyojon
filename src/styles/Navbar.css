@@ -1,0 +1,24 @@
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+.logo-image{
+    width: 150px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.nav-item{
+    font-family: 'Inter';
+    padding: 8px;
+    font-weight: semi-bold;
+}
+
+.logout-btn{
+    font-family: 'Inter';
+    background-color: rgb(224, 11, 11);
+    border: none;
+    width: 80px;
+    height: 50px;
+    color: white;
+    border-radius: 30px;
+}
