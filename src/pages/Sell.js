@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage, db, auth } from '../firebaseConfig';
@@ -29,6 +29,8 @@ const Sell = () => {
   const [location, setLocation] = useState(""); 
   const [coordinates, setCoordinates] = useState(null); 
   const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default location (Dhaka)
+
+  const autocompleteRef = useRef(null); // Create a ref for Autocomplete
 
   const {
     images,
@@ -95,17 +97,20 @@ const Sell = () => {
     }
   };
 
-  const handleSearchSelect = async (place) => {
-    const { geometry, formatted_address } = place;
-    setCoordinates({
-      lat: geometry.location.lat(),
-      lng: geometry.location.lng(),
-    });
-    setMapCenter({
-      lat: geometry.location.lat(),
-      lng: geometry.location.lng(),
-    });
-    setLocation(formatted_address);
+  const handleSearchSelect = () => {
+    const place = autocompleteRef.current.getPlace(); // Get the place from the autocompleteRef
+    if (place.geometry) {
+      const { location } = place.geometry;
+      setCoordinates({
+        lat: location.lat(),
+        lng: location.lng(),
+      });
+      setMapCenter({
+        lat: location.lat(),
+        lng: location.lng(),
+      });
+      setLocation(place.formatted_address);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -216,7 +221,8 @@ const Sell = () => {
       <div className="mb-3">
         <label className="form-label">Search Location</label>
         <Autocomplete
-          onPlaceChanged={() => handleSearchSelect(autocomplete.getPlace())}
+          onPlaceChanged={handleSearchSelect}
+          ref={autocompleteRef} // Attach ref to Autocomplete
         >
           <input
             type="text"
