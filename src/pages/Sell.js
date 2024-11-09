@@ -11,7 +11,7 @@ const categories = ["Books & Stationaries", "Clothes", "Electronics", "Furniture
 const Sell = () => {
   const navigate = useNavigate();
   
-  const { isLoaded } = useLoadScript({
+  const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_MAPS_APIKEY,
     libraries: ["places"], // Ensure libraries prop is provided
   });
@@ -178,6 +178,14 @@ const Sell = () => {
     }
   };
 
+  if (!isLoaded) {
+    return <div>Loading...</div>; // Show loading until Google Maps is fully loaded
+  }
+
+  if (loadError) {
+    return <div>Error loading Google Maps API</div>; // Show an error message if there is an issue with the Google Maps API
+  }
+
   return (
     <form className="form shadow rounded p-3 mt-5" onSubmit={handleSubmit}>
       <h3 className="text-center mb-3">Create a Post</h3>
@@ -240,22 +248,18 @@ const Sell = () => {
         <p>Selected Location: {location || "Not selected"}</p>
       </div>
       <div className="mb-3">
-        <label className="form-label">Select Location on Map</label>
-        <div style={{ width: '100%', height: '300px' }}>
-          {isLoaded ? (
-            <GoogleMap
-              center={mapCenter}
-              zoom={10}
-              mapContainerStyle={{ width: '100%', height: '100%' }}
-              onClick={handleMapClick}
-            >
-              {coordinates && (
-                <MarkerF position={coordinates} />
-              )}
-            </GoogleMap>
-          ) : (
-            <div>Loading...</div>
-          )}
+        <label className="form-label">Location on Map</label>
+        <div style={{ width: '100%', height: '400px' }}>
+          <GoogleMap
+            zoom={10}
+            center={mapCenter}
+            mapContainerStyle={{ width: '100%', height: '100%' }}
+            onClick={handleMapClick}
+          >
+            {coordinates && (
+              <MarkerF position={coordinates} />
+            )}
+          </GoogleMap>
         </div>
       </div>
       <div className="text-center">
