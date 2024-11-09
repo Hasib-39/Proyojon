@@ -25,7 +25,8 @@ const Sell = () => {
   });
 
   const [location, setLocation] = useState(null); // To store the clicked location
-  const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default to Dhaka 
+  const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default to Dhaka initially
+  const [region, setRegion] = useState(""); // New state for region
 
   const {
     images,
@@ -37,18 +38,18 @@ const Sell = () => {
     loading,
   } = values;
 
-  // Fetch current location on mount
+  // Fetch current location and region on mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
-          setLocation(`${latitude}, ${longitude}`);  // Set the location
-          setMapCenter({ lat: latitude, lng: longitude });  // Set the map center to user's location
+          setLocation(`${latitude}, ${longitude}`);
+          setMapCenter({ lat: latitude, lng: longitude });
+          await fetchRegionName(latitude, longitude);
         },
         (error) => {
           console.error('Error getting geolocation', error);
-          // centered on Dhaka as default
         }
       );
     } else {
@@ -59,11 +60,30 @@ const Sell = () => {
   const handleChange = (e) =>
     setValues({ ...values, [e.target.name]: e.target.value });
 
-  const handleMapClick = (event) => {
+  const handleMapClick = async (event) => {
     const { latLng } = event;
     const lat = latLng.lat();
     const lng = latLng.lng();
-    setLocation(`${lat}, ${lng}`); // Set location as a string "lat, lng"
+    setLocation(`${lat}, ${lng}`);
+    await fetchRegionName(lat, lng); // Fetch region based on clicked location
+  };
+
+  const fetchRegionName = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_MAPS_APIKEY}`
+      );
+      const data = await response.json();
+      const regionResult = data.results.find(result =>
+        result.types.includes("administrative_area_level_3") // Area level 3 is the Neibourhood
+      );
+      if (regionResult) {
+        const regionName = regionResult.address_components[0].long_name;
+        setRegion(regionName); // Set the fetched region name
+      }
+    } catch (error) {
+      console.error("Error fetching region name:", error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -94,7 +114,8 @@ const Sell = () => {
         title,
         category,
         contactnum,
-        location, // Store the selected location coordinates
+        location,
+        region, // Store the selected region name
         description,
         isDonated: false,
         publishedAt: Timestamp.fromDate(new Date()),
@@ -117,7 +138,8 @@ const Sell = () => {
         description: '',
         loading: false,
       });
-      setLocation(null); // Reset location
+      setLocation(null);
+      setRegion(""); // Reset region
       navigate('/');
     } catch (error) {
       setValues({ ...values, error: error.message, loading: false });
@@ -176,7 +198,7 @@ const Sell = () => {
         <div style={{ width: '100%', height: '300px' }}>
           {isLoaded ? (
             <GoogleMap
-              center={mapCenter} // Use mapCenter state for the default position (user's current location)
+              center={mapCenter}
               zoom={10}
               mapContainerStyle={{ width: '100%', height: '100%' }}
               onClick={handleMapClick}
@@ -192,6 +214,7 @@ const Sell = () => {
             </GoogleMap>
           ) : <p>Loading map...</p>}
         </div>
+        <p>Selected Region: {region || "Not selected"}</p>
       </div>
       {error ? <p className="text-center text-danger">{error}</p> : null}
       <div className="mb-3 text-center">
