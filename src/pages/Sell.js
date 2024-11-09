@@ -147,7 +147,7 @@ const Sell = () => {
         category,
         contactnum,
         location, 
-        coordinates, 
+        // coordinates, 
         description,
         isDonated: false,
         publishedAt: Timestamp.fromDate(new Date()),
