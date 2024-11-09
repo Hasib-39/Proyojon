@@ -1,9 +1,10 @@
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
-import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
+import '../styles/AdCard.css';
 
 const AdCard = ({ ad }) => {
   const adLink = `/${ad.category.toLowerCase()}/${ad.adId}`;
@@ -38,20 +39,21 @@ const AdCard = ({ ad }) => {
         />
       </Link>
       <div className="card-body">
-        <p className="d-flex justify-content-between align-items-center">
-          <small>{ad.category}</small>
+        <Link to={adLink} className='d-flex justify-content-between align-items-center'>
+          <h5 className="card-title">{ad.title}</h5>
+          <p className="">
+          
           {users?.includes(auth.currentUser?.uid) ? (
             <AiFillHeart size={30} onClick={toggleFavorite} className="text-danger" />
           ) : (
             <AiOutlineHeart size={30} onClick={toggleFavorite} className="text-danger" />
           )}
         </p>
-        <Link to={adLink}>
-          <h5 className="card-title">{ad.title}</h5>
         </Link>
+        <small className="category">{ad.category}</small>
         <Link to={adLink}>
           <p className="card-text">
-            {ad.location} - <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
+            {ad.location ? ad.location : "Unknown"} - <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
           </p>
         </Link>
       </div>
