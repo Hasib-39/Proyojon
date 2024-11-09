@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage, db, auth } from '../firebaseConfig';
@@ -25,6 +25,7 @@ const Sell = () => {
   });
 
   const [location, setLocation] = useState(null); // To store the clicked location
+  const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default to Dhaka 
 
   const {
     images,
@@ -36,6 +37,25 @@ const Sell = () => {
     loading,
   } = values;
 
+  // Fetch current location on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation(`${latitude}, ${longitude}`);  // Set the location
+          setMapCenter({ lat: latitude, lng: longitude });  // Set the map center to user's location
+        },
+        (error) => {
+          console.error('Error getting geolocation', error);
+          // centered on Dhaka as default
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  }, []);
+
   const handleChange = (e) =>
     setValues({ ...values, [e.target.name]: e.target.value });
 
@@ -45,7 +65,6 @@ const Sell = () => {
     const lng = latLng.lng();
     setLocation(`${lat}, ${lng}`); // Set location as a string "lat, lng"
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -157,7 +176,7 @@ const Sell = () => {
         <div style={{ width: '100%', height: '300px' }}>
           {isLoaded ? (
             <GoogleMap
-              center={{ lat: 23.8103, lng: 90.4125 }}
+              center={mapCenter} // Use mapCenter state for the default position (user's current location)
               zoom={10}
               mapContainerStyle={{ width: '100%', height: '100%' }}
               onClick={handleMapClick}
