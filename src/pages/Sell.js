@@ -4,14 +4,16 @@ import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage, db, auth } from '../firebaseConfig';
 import { doc, addDoc, collection, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { GoogleMap, useLoadScript, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, useLoadScript, MarkerF, Autocomplete } from '@react-google-maps/api';
 
 const categories = ["Books & Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
 
 const Sell = () => {
   const navigate = useNavigate();
+  
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_MAPS_APIKEY
+    googleMapsApiKey: process.env.REACT_APP_MAPS_APIKEY,
+    libraries: ["places"], // Ensure libraries prop is provided
   });
 
   const [values, setValues] = useState({
@@ -24,9 +26,9 @@ const Sell = () => {
     loading: false,
   });
 
-  const [location, setLocation] = useState(null); // To store the clicked location
-  const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default to Dhaka initially
-  const [region, setRegion] = useState(""); // New state for region
+  const [location, setLocation] = useState(""); 
+  const [coordinates, setCoordinates] = useState(null); 
+  const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default location (Dhaka)
 
   const {
     images,
@@ -38,13 +40,12 @@ const Sell = () => {
     loading,
   } = values;
 
-  // Fetch current location and region on mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          setLocation(`${latitude}, ${longitude}`);
+          setCoordinates({ lat: latitude, lng: longitude });
           setMapCenter({ lat: latitude, lng: longitude });
           await fetchRegionName(latitude, longitude);
         },
@@ -57,15 +58,14 @@ const Sell = () => {
     }
   }, []);
 
-  const handleChange = (e) =>
-    setValues({ ...values, [e.target.name]: e.target.value });
+  const handleChange = (e) => setValues({ ...values, [e.target.name]: e.target.value });
 
   const handleMapClick = async (event) => {
     const { latLng } = event;
     const lat = latLng.lat();
     const lng = latLng.lng();
-    setLocation(`${lat}, ${lng}`);
-    await fetchRegionName(lat, lng); // Fetch region based on clicked location
+    setCoordinates({ lat, lng });
+    await fetchRegionName(lat, lng);
   };
 
   const fetchRegionName = async (lat, lng) => {
@@ -74,22 +74,44 @@ const Sell = () => {
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_MAPS_APIKEY}`
       );
       const data = await response.json();
-      const regionResult = data.results.find(result =>
-        result.types.includes("administrative_area_level_3") // Area level 3 is the Neibourhood
+      
+      const areaLevel3 = data.results.find(result =>
+        result.types.includes("administrative_area_level_3")
       );
-      if (regionResult) {
-        const regionName = regionResult.address_components[0].long_name;
-        setRegion(regionName); // Set the fetched region name
+      const areaLevel2 = data.results.find(result =>
+        result.types.includes("administrative_area_level_2")
+      );
+  
+      let locationString = "Unknown location";
+      if (areaLevel3 && areaLevel2) {
+        locationString = `${areaLevel3.address_components[0].long_name}, ${areaLevel2.address_components[0].long_name}`;
+      } else if (areaLevel2) {
+        locationString = areaLevel2.address_components[0].long_name;
       }
+  
+      setLocation(locationString);
     } catch (error) {
       console.error("Error fetching region name:", error);
     }
   };
 
+  const handleSearchSelect = async (place) => {
+    const { geometry, formatted_address } = place;
+    setCoordinates({
+      lat: geometry.location.lat(),
+      lng: geometry.location.lng(),
+    });
+    setMapCenter({
+      lat: geometry.location.lat(),
+      lng: geometry.location.lng(),
+    });
+    setLocation(formatted_address);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!location) {
+    if (!location || !coordinates) {
       setValues({ ...values, error: "Please select a location on the map." });
       return;
     }
@@ -97,7 +119,6 @@ const Sell = () => {
     setValues({ ...values, error: "", loading: true });
 
     try {
-      // Upload images to Firebase storage
       let imgs = [];
       if (images.length) {
         for (let image of images) {
@@ -108,14 +129,13 @@ const Sell = () => {
         }
       }
 
-      // Add data to Firestore
       const result = await addDoc(collection(db, 'ads'), {
         images: imgs,
         title,
         category,
         contactnum,
-        location,
-        region, // Store the selected region name
+        location, 
+        coordinates, 
         description,
         isDonated: false,
         publishedAt: Timestamp.fromDate(new Date()),
@@ -138,8 +158,8 @@ const Sell = () => {
         description: '',
         loading: false,
       });
-      setLocation(null);
-      setRegion(""); // Reset region
+      setLocation("");
+      setCoordinates(null);
       navigate('/');
     } catch (error) {
       setValues({ ...values, error: error.message, loading: false });
@@ -194,6 +214,19 @@ const Sell = () => {
         />
       </div>
       <div className="mb-3">
+        <label className="form-label">Search Location</label>
+        <Autocomplete
+          onPlaceChanged={() => handleSearchSelect(autocomplete.getPlace())}
+        >
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search for a location"
+          />
+        </Autocomplete>
+        <p>Selected Location: {location || "Not selected"}</p>
+      </div>
+      <div className="mb-3">
         <label className="form-label">Select Location on Map</label>
         <div style={{ width: '100%', height: '300px' }}>
           {isLoaded ? (
@@ -203,18 +236,12 @@ const Sell = () => {
               mapContainerStyle={{ width: '100%', height: '100%' }}
               onClick={handleMapClick}
             >
-              {location && (
-                <MarkerF
-                  position={{
-                    lat: parseFloat(location.split(", ")[0]),
-                    lng: parseFloat(location.split(", ")[1])
-                  }}
-                />
+              {coordinates && (
+                <MarkerF position={coordinates} />
               )}
             </GoogleMap>
           ) : <p>Loading map...</p>}
         </div>
-        <p>Selected Region: {region || "Not selected"}</p>
       </div>
       {error ? <p className="text-center text-danger">{error}</p> : null}
       <div className="mb-3 text-center">
