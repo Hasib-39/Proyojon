@@ -97,19 +97,26 @@ const Sell = () => {
     }
   };
 
+  // Handle the Autocomplete instance and the place change
+  const handleAutocompleteLoad = (autocomplete) => {
+    autocompleteRef.current = autocomplete;
+  };
+
   const handleSearchSelect = () => {
-    const place = autocompleteRef.current.getPlace(); // Get the place from the autocompleteRef
-    if (place.geometry) {
-      const { location } = place.geometry;
-      setCoordinates({
-        lat: location.lat(),
-        lng: location.lng(),
-      });
-      setMapCenter({
-        lat: location.lat(),
-        lng: location.lng(),
-      });
-      setLocation(place.formatted_address);
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace(); // Use the autocomplete instance here
+      if (place.geometry) {
+        const { location } = place.geometry;
+        setCoordinates({
+          lat: location.lat(),
+          lng: location.lng(),
+        });
+        setMapCenter({
+          lat: location.lat(),
+          lng: location.lng(),
+        });
+        setLocation(place.formatted_address);
+      }
     }
   };
 
@@ -221,8 +228,8 @@ const Sell = () => {
       <div className="mb-3">
         <label className="form-label">Search Location</label>
         <Autocomplete
-          onPlaceChanged={handleSearchSelect}
-          ref={autocompleteRef} // Attach ref to Autocomplete
+          onLoad={handleAutocompleteLoad} // Set the autocomplete instance
+          onPlaceChanged={handleSearchSelect} // When a place is selected
         >
           <input
             type="text"
@@ -246,11 +253,12 @@ const Sell = () => {
                 <MarkerF position={coordinates} />
               )}
             </GoogleMap>
-          ) : <p>Loading map...</p>}
+          ) : (
+            <div>Loading...</div>
+          )}
         </div>
       </div>
-      {error ? <p className="text-center text-danger">{error}</p> : null}
-      <div className="mb-3 text-center">
+      <div className="text-center">
         <button className="btn btn-secondary btn-sm" disabled={loading}>Create</button>
       </div>
     </form>
