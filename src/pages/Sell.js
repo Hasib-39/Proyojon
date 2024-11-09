@@ -4,38 +4,33 @@ import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage, db, auth } from '../firebaseConfig';
 import { doc, addDoc, collection, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { GoogleMap, useLoadScript, MarkerF } from '@react-google-maps/api';
 
 const categories = ["Books & Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
-const locations = [
-  "Dhaka",
-  "Chittagong",
-  "Khulna",
-  "Rajshahi",
-  "Barisal",
-  "Sylhet",
-  "Rangpur",
-  "Mymensingh"
-];
 
 const Sell = () => {
   const navigate = useNavigate();
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.REACT_APP_MAPS_APIKEY
+  });
+
   const [values, setValues] = useState({
     images: [],
     title: "",
     category: "",
     contactnum: "",
-    location: "",
     description: "",
     error: "",
     loading: false,
   });
+
+  const [location, setLocation] = useState(null); // To store the clicked location
 
   const {
     images,
     title,
     category,
     contactnum,
-    location,
     description,
     error,
     loading,
@@ -44,13 +39,26 @@ const Sell = () => {
   const handleChange = (e) =>
     setValues({ ...values, [e.target.name]: e.target.value });
 
+  const handleMapClick = (event) => {
+    const { latLng } = event;
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+    setLocation(`${lat}, ${lng}`); // Set location as a string "lat, lng"
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!location) {
+      setValues({ ...values, error: "Please select a location on the map." });
+      return;
+    }
 
     setValues({ ...values, error: "", loading: true });
 
     try {
-      // loop through images
+      // Upload images to Firebase storage
       let imgs = [];
       if (images.length) {
         for (let image of images) {
@@ -60,27 +68,23 @@ const Sell = () => {
           imgs.push({ url: fileUrl, path: result.ref.fullPath });
         }
       }
-      // add data to Firestore
+
+      // Add data to Firestore
       const result = await addDoc(collection(db, 'ads'), {
         images: imgs,
         title,
         category,
         contactnum,
-        location,
+        location, // Store the selected location coordinates
         description,
         isDonated: false,
         publishedAt: Timestamp.fromDate(new Date()),
         postedBy: auth.currentUser.uid,
       });
 
-      await setDoc(doc(db,'ads',result.id),
-        {
-          adId: result.id,
-        },
-        {
-          merge: true,
-        }
-      );
+      await setDoc(doc(db, 'ads', result.id), {
+        adId: result.id,
+      }, { merge: true });
 
       await setDoc(doc(db, 'favorites', result.id), {
         users: []
@@ -91,10 +95,10 @@ const Sell = () => {
         title: '',
         category: '',
         contactnum: '',
-        location: '',
         description: '',
         loading: false,
       });
+      setLocation(null); // Reset location
       navigate('/');
     } catch (error) {
       setValues({ ...values, error: error.message, loading: false });
@@ -138,16 +142,6 @@ const Sell = () => {
         <input type="text" className="form-control" name="contactnum" value={contactnum} onChange={handleChange} />
       </div>
       <div className="mb-3">
-        <select name="location" className="form-select" value={location} onChange={handleChange}>
-          <option value="">Select Location</option>
-          {locations.map((location) => (
-            <option value={location} key={location}>
-              {location}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="mb-3">
         <label className="form-label">Item Description & Specific Address</label>
         <textarea
           name="description"
@@ -157,6 +151,28 @@ const Sell = () => {
           value={description}
           onChange={handleChange}
         />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Select Location on Map</label>
+        <div style={{ width: '100%', height: '300px' }}>
+          {isLoaded ? (
+            <GoogleMap
+              center={{ lat: 23.8103, lng: 90.4125 }}
+              zoom={10}
+              mapContainerStyle={{ width: '100%', height: '100%' }}
+              onClick={handleMapClick}
+            >
+              {location && (
+                <MarkerF
+                  position={{
+                    lat: parseFloat(location.split(", ")[0]),
+                    lng: parseFloat(location.split(", ")[1])
+                  }}
+                />
+              )}
+            </GoogleMap>
+          ) : <p>Loading map...</p>}
+        </div>
       </div>
       {error ? <p className="text-center text-danger">{error}</p> : null}
       <div className="mb-3 text-center">
