@@ -1,6 +1,9 @@
 .category{
-    color: #959595;
+    color: white;
+    font-weight: bold;
     font-size: 1rem;
+    padding: 4px 10px 4px 10px;
+    border-radius: 10px;
 }
 
 .card-text{

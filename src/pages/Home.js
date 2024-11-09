@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { collection, orderBy, query, getDocs, where } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import AdCard from "../components/AdCard";
+import { db } from "../firebaseConfig";
 
 const Home = () => {
   const [ads, setAds] = useState([]);
   const [filter, setFilter] = useState("");
   const [locationService, setLocationService] = useState(false); // Manage location service toggle
-
+  const categories = [
+    { value: "", label: "All", color: "#000000" }, // default black
+    { value: "Books & Stationaries", label: "Books & Stationaries", color: "#FF6347" }, // Tomato
+    { value: "Clothes", label: "Clothes", color: "#4682B4" }, // SteelBlue
+    { value: "Electronics", label: "Electronics", color: "#8A2BE2" }, // BlueViolet
+    { value: "Furniture", label: "Furniture", color: "#DAA520" }, // GoldenRod
+    { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4" }, // HotPink
+  ];
 
   const handleToggle = () => {
     setLocationService(!locationService); // Toggle between true and false
@@ -47,12 +54,14 @@ const Home = () => {
             style={{ width: "200px", margin: "auto" }}
             onChange={(e) => setFilter(e.target.value)}
           >
-            <option value="">All</option>
-            <option value="Books & Stationaries">Books & Stationaries</option>
-            <option value="Clothes">Clothes</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Furniture">Furniture</option>
-            <option value="Miscellaneous">Miscellaneous</option>
+            {categories.map((category) => (
+              <option
+                key={category.value}
+                value={category.value}
+              >
+                {category.label}
+              </option>
+            ))}
           </select>
         </div>
         <div style={{ marginTop: "20px", textAlign: "center" }}>
@@ -71,8 +80,8 @@ const Home = () => {
         </div>
       </div>
       </div>
-      <h3>Recent Posts</h3>
-      <div className="row">
+      <h3 style={{marginBottom : "20px"}}>Recent Posts</h3>
+      <div className="row" style={{marginTop : "20px"}}>
         {ads.map((ad) => (
           <div className="col-sm-6 col-md-4 col-xl-3 mb-3" key={ad.adId}>
             <AdCard ad={ad} />
