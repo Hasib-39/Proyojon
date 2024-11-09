@@ -158,7 +158,7 @@ const Chat = () => {
   return (
     <div className="row g-0">
       <div className="headline">Chats</div>
-      <div className="col-2 col-md-2 users_container">
+      <div className="col-3 col-md-3 users_container">
         {users.map((user, i) => (
           <User
             key={i}
@@ -203,6 +203,7 @@ const Chat = () => {
         )}
       </div>
       <div className="col-3 col-md-3 position-relative chat-info">
+        <div className="test">
         {chat && (
           <>
             {chat.other.photoUrl ? (
@@ -240,6 +241,7 @@ const Chat = () => {
             </div>
           </>
         )}
+      </div>
       </div>
     </div>
   );

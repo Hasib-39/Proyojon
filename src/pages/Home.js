@@ -8,12 +8,12 @@ const Home = () => {
   const [filter, setFilter] = useState("");
   const [locationService, setLocationService] = useState(false); // Manage location service toggle
   const categories = [
-    { value: "", label: "All", color: "#000000" }, // default black
-    { value: "Books & Stationaries", label: "Books & Stationaries", color: "#FF6347" }, // Tomato
-    { value: "Clothes", label: "Clothes", color: "#4682B4" }, // SteelBlue
-    { value: "Electronics", label: "Electronics", color: "#8A2BE2" }, // BlueViolet
-    { value: "Furniture", label: "Furniture", color: "#DAA520" }, // GoldenRod
-    { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4" }, // HotPink
+    { value: "", label: "All", color: "#a8c7bf" }, 
+    { value: "Books & Stationaries", label: "Books & Stationaries", color: "#518341" }, 
+    { value: "Clothes", label: "Clothes", color: "#d6bf32" }, 
+    { value: "Electronics", label: "Electronics", color: "#2c71bf" }, 
+    { value: "Furniture", label: "Furniture", color: "#9a1d30" }, 
+    { value: "Miscellaneous", label: "Miscellaneous", color: "#5c3c92" }, 
   ];
 
   const handleToggle = () => {
