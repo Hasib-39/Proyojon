@@ -11,7 +11,7 @@ const categories = ["Books & Stationaries", "Clothes", "Electronics", "Furniture
 const Sell = () => {
   const navigate = useNavigate();
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: import.meta.env.REACT_APP_MAPS_APIKEY
+    googleMapsApiKey: process.env.REACT_APP_MAPS_APIKEY
   });
 
   const [values, setValues] = useState({
