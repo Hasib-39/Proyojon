@@ -49,17 +49,16 @@ const AdCard = ({ ad }) => {
         />
       </Link>
       <div className="card-body">
-        <Link to={adLink} className='d-flex justify-content-between align-items-center'>
+        <p className='d-flex justify-content-between align-items-center'>
+        <Link to={adLink} >
           <h5 className="card-title">{ad.title}</h5>
-          <p className="">
-          
+        </Link>
           {users?.includes(auth.currentUser?.uid) ? (
             <AiFillHeart size={30} onClick={toggleFavorite} className="text-danger" />
           ) : (
             <AiOutlineHeart size={30} onClick={toggleFavorite} className="text-danger" />
           )}
         </p>
-        </Link>
         <small className="category" style={{backgroundColor : categoryColor}}>{ad.category}</small>
         <Link to={adLink}>
           <p className="card-text">
