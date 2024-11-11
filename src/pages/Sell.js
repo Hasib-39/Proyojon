@@ -5,6 +5,8 @@ import { storage, db, auth } from '../firebaseConfig';
 import { doc, addDoc, collection, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, useLoadScript, MarkerF, Autocomplete } from '@react-google-maps/api';
+import "../styles/Sell.css";
+
 
 const categories = ["Books & Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
 
@@ -26,6 +28,7 @@ const Sell = () => {
     loading: false,
   });
 
+  const [imagePreview, setImagePreview] = useState(null);
   const [location, setLocation] = useState(""); 
   const [coordinates, setCoordinates] = useState(null); 
   const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default location (Dhaka)
@@ -187,86 +190,106 @@ const Sell = () => {
   }
 
   return (
-    <form className="form shadow rounded p-3 mt-5" onSubmit={handleSubmit}>
-      <h3 className="text-center mb-3">Create a Post</h3>
-      <div className="mb-3 text-center">
-        <label htmlFor="image">
-          <div className="btn btn-secondary btn-sm">
-            <FaCloudUploadAlt size={30} /> Upload Image
-          </div>
-        </label>
-        <input
-          type="file"
-          id="image"
-          style={{ display: "none" }}
-          accept="image/*"
-          multiple
-          onChange={(e) => setValues({ ...values, images: Array.from(e.target.files) })}
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Title</label>
-        <input type="text" className="form-control" name="title" value={title} onChange={handleChange} />
-      </div>
-      <div className="mb-3">
-        <select name="category" className="form-select" value={category} onChange={handleChange}>
-          <option value="">Select Category</option>
-          {categories.map((category) => (
-            <option value={category} key={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Contact Number</label>
-        <input type="text" className="form-control" name="contactnum" value={contactnum} onChange={handleChange} />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Item Description & Specific Address</label>
-        <textarea
-          name="description"
-          cols="30"
-          rows="3"
-          className="form-control"
-          value={description}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Search Location</label>
-        <Autocomplete
-          onLoad={handleAutocompleteLoad} // Set the autocomplete instance
-          onPlaceChanged={handleSearchSelect} // When a place is selected
-        >
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search for a location"
-          />
-        </Autocomplete>
-        <p>Selected Location: {location || "Not selected"}</p>
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Location on Map</label>
-        <div style={{ width: '100%', height: '400px' }}>
-          <GoogleMap
-            zoom={10}
-            center={mapCenter}
-            mapContainerStyle={{ width: '100%', height: '100%' }}
-            onClick={handleMapClick}
+    <div className="container-fluid">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-10 col-xl-12">
+          <form className="form shadow rounded p-3 mt-5 custom-from" 
+          onSubmit={handleSubmit}
+          style={{ maxWidth: '100%', width: '1000px', margin: '0 auto' }}
           >
-            {coordinates && (
-              <MarkerF position={coordinates} />
-            )}
-          </GoogleMap>
+            <h3 className="text-center mb-3">Create a Post</h3>
+            <div className="form-content">
+              <div className="form-fields">
+                <div className="mb-3 text-center upload-box">
+                  <label htmlFor="image">
+                    <div className="upload-btn">
+                    {imagePreview ? (
+                      <img src={imagePreview} alt="Preview" className="image-preview" />
+                    ) : (
+                      <>
+                        <FaCloudUploadAlt size={30} /> Upload Image 
+                      </>
+                    )}
+                    </div>
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    style={{ display: "none" }}
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files);
+                      setValues({ ...values, images: files });
+                      if (files.length > 0) {
+                        const reader = new FileReader();
+                        reader.onload = () => setImagePreview(reader.result);
+                        reader.readAsDataURL(files[0]);
+                      }
+                    }}
+                  />
+                  {/* {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />} */}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Title</label>
+                  <input type="text" className="form-control" name="title" value={title} onChange={handleChange} />
+                </div>
+                <div className="mb-3">
+                  <select name="category" className="form-select" value={category} onChange={handleChange}>
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option value={category} key={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Contact Number</label>
+                  <input type="text" className="form-control" name="contactnum" value={contactnum} onChange={handleChange} />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Item Description & Specific Address</label>
+                  <textarea
+                    name="description"
+                    cols="30"
+                    rows="3"
+                    className="form-control"
+                    value={description}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Search Location</label>
+                  <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handleSearchSelect}>
+                    <input type="text" className="form-control" placeholder="Search for a location" />
+                  </Autocomplete>
+                  <p>Selected Location: {location || "Not selected"}</p>
+                </div>
+              </div>
+              <div className="map-container">
+                <label className="form-label">Location on Map</label>
+                <div style={{ width: '100%', height: '400px' }}>
+                  <GoogleMap
+                    zoom={10}
+                    center={mapCenter}
+                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    onClick={handleMapClick}
+                  >
+                    {coordinates && <MarkerF position={coordinates} />}
+                  </GoogleMap>
+                </div>
+              </div>
+            </div>
+            <div className="text-center">
+              <button className="btn btn-secondary btn-sm" disabled={loading}>Create</button>
+            </div>
+          </form>
         </div>
       </div>
-      <div className="text-center">
-        <button className="btn btn-secondary btn-sm" disabled={loading}>Create</button>
-      </div>
-    </form>
+    </div>
   );
+  
 };
 
 export default Sell;
