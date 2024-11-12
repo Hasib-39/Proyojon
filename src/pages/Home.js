@@ -11,13 +11,13 @@ const Home = () => {
 
   // Define categories with image URLs
   const categories = [
-    { value: "", label: "All", color: "#000000", image: "/images/all.jpg" },
+    { value: "", label: "All", color: "#000000", image: "/images/all.png" },
     { value: "Stationaries", label: "Stationaries", color: "#FF6347", image: "/images/stationaries.png" },
-    { value: "Books", label: "Books", color: "#442a82", image: "/images/books.jpg" },
-    { value: "Clothes", label: "Clothes", color: "#4682B4", image: "/images/clothes.jpg" },
-    { value: "Electronics", label: "Electronics", color: "#8A2BE2", image: "/images/electronics.jpg" },
-    { value: "Furniture", label: "Furniture", color: "#DAA520", image: "/images/furniture.jpg" },
-    { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/miscellaneous.jpg" },
+    { value: "Books", label: "Books", color: "#442a82", image: "/images/books.png" },
+    { value: "Clothes", label: "Clothes", color: "#4682B4", image: "/images/clothes.png" },
+    { value: "Electronics", label: "Electronics", color: "#8A2BE2", image: "/images/electronics.jpeg" },
+    { value: "Furniture", label: "Furniture", color: "#DAA520", image: "/images/furniture.png" },
+    { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
 
   const handleToggle = () => {
@@ -69,7 +69,7 @@ const Home = () => {
         ))}
       </div>
       
-      <div className="filter-container">
+      {/* <div className="filter-container">
         <h5>Filter By Category</h5>
         <select
           className="form-select filter-select"
@@ -94,7 +94,7 @@ const Home = () => {
           />
           <span className="toggle-slider"></span>
         </label>
-      </div>
+      </div> */}
 
       <h3 className="section-title">Recent Posts</h3>
       <div className="row ads-container">
