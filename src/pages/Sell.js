@@ -8,7 +8,7 @@ import { GoogleMap, useLoadScript, MarkerF, Autocomplete } from '@react-google-m
 import "../styles/Sell.css";
 
 
-const categories = ["Books & Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
+const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
 
 const Sell = () => {
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ const Sell = () => {
   const handleSearchSelect = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace(); // Use the autocomplete instance here
-      if (place.geometry) {
+      if (place && place.geometry) {
         const { location } = place.geometry;
         setCoordinates({
           lat: location.lat(),
@@ -119,6 +119,8 @@ const Sell = () => {
           lng: location.lng(),
         });
         setLocation(place.formatted_address);
+      } else {
+        console.error("Cannot get place or place geometry");
       }
     }
   };
@@ -150,7 +152,7 @@ const Sell = () => {
         category,
         contactnum,
         location, 
-        // coordinates, 
+        coordinates, 
         description,
         isDonated: false,
         publishedAt: Timestamp.fromDate(new Date()),
@@ -261,8 +263,24 @@ const Sell = () => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Search Location</label>
-                  <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handleSearchSelect}>
+                  {/* <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handleSearchSelect}>
                     <input type="text" className="form-control" placeholder="Search for a location" />
+                  </Autocomplete> */}
+                  <Autocomplete
+                    onLoad={handleAutocompleteLoad}
+                    onPlaceChanged={handleSearchSelect}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search for a location"
+                      className="form-control"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault(); // Prevent form submission on Enter
+                          handleSearchSelect(); // Manually trigger the search selection
+                        }
+                      }}
+                    />
                   </Autocomplete>
                   <p>Selected Location: {location || "Not selected"}</p>
                 </div>
@@ -271,7 +289,7 @@ const Sell = () => {
                 <label className="form-label">Location on Map</label>
                 <div style={{ width: '100%', height: '400px' }}>
                   <GoogleMap
-                    zoom={10}
+                    zoom={14}
                     center={mapCenter}
                     mapContainerStyle={{ width: '100%', height: '100%' }}
                     onClick={handleMapClick}
