@@ -99,7 +99,7 @@ const Home = () => {
       <h3 className="section-title">Recent Posts</h3>
       <div className="row ads-container">
         {ads.map((ad) => (
-          <div className="col-sm-6 col-md-4 col-xl-3 mb-3" key={ad.adId}>
+          <div className="size_ad" key={ad.adId}>
             <AdCard ad={ad} />
           </div>
         ))}
