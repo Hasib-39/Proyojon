@@ -22,7 +22,8 @@ const AdCard = ({ ad }) => {
 
   const categories = [
     { value: "", label: "All", color: "#a8c7bf" }, 
-    { value: "Books & Stationaries", label: "Books & Stationaries", color: "#518341" }, 
+    { value: "Stationaries", label: "Stationaries", color: "#FF6347" }, 
+    { value: "Books", label: "Books", color: "#442a82" },
     { value: "Clothes", label: "Clothes", color: "#d6bf32" }, 
     { value: "Electronics", label: "Electronics", color: "#2c71bf" }, 
     { value: "Furniture", label: "Furniture", color: "#9a1d30" }, 
@@ -49,21 +50,24 @@ const AdCard = ({ ad }) => {
         />
       </Link>
       <div className="card-body">
-        <Link to={adLink} className='d-flex justify-content-between align-items-center'>
-          <h5 className="card-title">{ad.title}</h5>
-          <p className="">
-          
+        <p className='d-flex justify-content-between align-items-center'>
+          <Link to={adLink} >
+            <h5 className="card-title">{ad.title}</h5>
+          </Link>
           {users?.includes(auth.currentUser?.uid) ? (
             <AiFillHeart size={30} onClick={toggleFavorite} className="text-danger" />
           ) : (
             <AiOutlineHeart size={30} onClick={toggleFavorite} className="text-danger" />
           )}
         </p>
-        </Link>
-        <small className="category" style={{backgroundColor : categoryColor}}>{ad.category}</small>
+        
         <Link to={adLink}>
           <p className="card-text">
-            {ad.location ? ad.location : "Unknown"} - <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
+            {ad.location ? ad.location : "Unknown"}
+          </p>
+          <p className="card-text-moment">
+            ~ <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
+            {" - "}<small className="category" style={{backgroundColor : categoryColor}}>{ad.category}</small>
           </p>
         </Link>
       </div>
