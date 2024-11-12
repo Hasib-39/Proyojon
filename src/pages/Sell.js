@@ -8,7 +8,7 @@ import { GoogleMap, useLoadScript, MarkerF, Autocomplete } from '@react-google-m
 import "../styles/Sell.css";
 
 
-const categories = ["Books & Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
+const categories = ["Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
 
 const Sell = () => {
   const navigate = useNavigate();
@@ -150,7 +150,7 @@ const Sell = () => {
         category,
         contactnum,
         location, 
-        // coordinates, 
+        coordinates, 
         description,
         isDonated: false,
         publishedAt: Timestamp.fromDate(new Date()),
@@ -271,7 +271,7 @@ const Sell = () => {
                 <label className="form-label">Location on Map</label>
                 <div style={{ width: '100%', height: '400px' }}>
                   <GoogleMap
-                    zoom={10}
+                    zoom={14}
                     center={mapCenter}
                     mapContainerStyle={{ width: '100%', height: '100%' }}
                     onClick={handleMapClick}

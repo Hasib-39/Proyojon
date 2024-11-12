@@ -9,7 +9,7 @@ const Home = () => {
   const [locationService, setLocationService] = useState(false); // Manage location service toggle
   const categories = [
     { value: "", label: "All", color: "#000000" }, // default black
-    { value: "Books & Stationaries", label: "Books & Stationaries", color: "#FF6347" }, // Tomato
+    { value: "Stationaries", label: "Stationaries", color: "#FF6347" }, // Tomato
     { value: "Clothes", label: "Clothes", color: "#4682B4" }, // SteelBlue
     { value: "Electronics", label: "Electronics", color: "#8A2BE2" }, // BlueViolet
     { value: "Furniture", label: "Furniture", color: "#DAA520" }, // GoldenRod
