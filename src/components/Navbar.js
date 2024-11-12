@@ -25,6 +25,10 @@ const Navbar = () => {
         }
     };
 
+    const handleLogin = () => {
+        navigate('/auth/login');  // Navigate to the login page
+    };
+
     return (
         <nav className="navbar navbar-expand-md bg-light navbar-light sticky-top shadow-sm">
             <div className="container-fluid">
@@ -88,9 +92,9 @@ const Navbar = () => {
                                     </Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/auth/login">
+                                    <button className="btn btn-primary" onClick={handleLogin}>
                                         Login
-                                    </Link>
+                                    </button>
                                 </li>
                             </>
                         )}
