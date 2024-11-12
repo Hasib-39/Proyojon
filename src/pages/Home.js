@@ -2,11 +2,12 @@ import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import AdCard from "../components/AdCard";
 import { db } from "../firebaseConfig";
+import "../styles/Home.css"; // Add CSS file for custom styling
 
 const Home = () => {
   const [ads, setAds] = useState([]);
   const [filter, setFilter] = useState("");
-  const [locationService, setLocationService] = useState(false); // Manage location service toggle
+  const [locationService, setLocationService] = useState(false);
   const categories = [
     { value: "", label: "All", color: "#000000" }, // default black
     { value: "Stationaries", label: "Stationaries", color: "#FF6347" }, // Tomato
@@ -18,7 +19,7 @@ const Home = () => {
   ];
 
   const handleToggle = () => {
-    setLocationService(!locationService); // Toggle between true and false
+    setLocationService(!locationService);
   };
 
   const getAds = async () => {
@@ -44,32 +45,34 @@ const Home = () => {
   useEffect(() => {
     getAds();
   }, [filter]);
-      //"Books & Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"
+
   return (
     <div className="mt-5 container">
-      <div className="d-flex justify-content-center justify-content-md-between align-items-center flex-wrap mb-5 form">
-        <div>
-          <h5>Filter By Category</h5>
-          <select
-            className="form-select"
-            style={{ width: "200px", margin: "auto" }}
-            onChange={(e) => setFilter(e.target.value)}
+      <h3 style={{ marginBottom: "20px" }}>Explore All Categories</h3>
+      <div className="category-container d-flex justify-content-around flex-wrap mb-5">
+        {categories.map((category) => (
+          <div
+            key={category.value}
+            className="category-item text-center"
+            onClick={() => setFilter(category.value)}
+            style={{ cursor: "pointer" }}
           >
-            {categories.map((category) => (
-              <option
-                key={category.value}
-                value={category.value}
-              >
-                {category.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <div className="category-icon-wrapper">
+              <img
+                src={`/icons/${category.icon}`}
+                alt={category.label}
+                className="category-icon"
+              />
+            </div>
+            <p className="category-label">{category.label}</p>
+          </div>
+        ))}
+      </div>
+      <div className="d-flex justify-content-center align-items-center mb-5 form">
         <label className="form-check-label" htmlFor="locationToggle">
-          <h5>Location Service: {locationService ? 'On' : 'Off'}</h5>
+          <h5>Location Service: {locationService ? "On" : "Off"}</h5>
         </label>
-        <div className="form-switch d-inline-block ms-2 ">
+        <div className="form-switch d-inline-block ms-2">
           <input
             className="form-check-input"
             type="checkbox"
@@ -80,9 +83,8 @@ const Home = () => {
           />
         </div>
       </div>
-      </div>
-      <h3 style={{marginBottom : "20px"}}>Recent Posts</h3>
-      <div className="row" style={{marginTop : "20px"}}>
+      <h3 style={{ marginBottom: "20px" }}>Recent Posts</h3>
+      <div className="row" style={{ marginTop: "20px" }}>
         {ads.map((ad) => (
           <div className="col-sm-6 col-md-4 col-xl-3 mb-3" key={ad.adId}>
             <AdCard ad={ad} />
