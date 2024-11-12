@@ -263,8 +263,24 @@ const Sell = () => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Search Location</label>
-                  <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handleSearchSelect}>
+                  {/* <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handleSearchSelect}>
                     <input type="text" className="form-control" placeholder="Search for a location" />
+                  </Autocomplete> */}
+                  <Autocomplete
+                    onLoad={handleAutocompleteLoad}
+                    onPlaceChanged={handleSearchSelect}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search for a location"
+                      className="form-control"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault(); // Prevent form submission on Enter
+                          handleSearchSelect(); // Manually trigger the search selection
+                        }
+                      }}
+                    />
                   </Autocomplete>
                   <p>Selected Location: {location || "Not selected"}</p>
                 </div>
