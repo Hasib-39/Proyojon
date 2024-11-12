@@ -22,7 +22,7 @@ const AdCard = ({ ad }) => {
 
   const categories = [
     { value: "", label: "All", color: "#a8c7bf" }, 
-    { value: "Books & Stationaries", label: "Books & Stationaries", color: "#odbec3" }, 
+    { value: "Books & Stationaries", label: "Books & Stationaries", color: "#518341" }, 
     { value: "Clothes", label: "Clothes", color: "#d6bf32" }, 
     { value: "Electronics", label: "Electronics", color: "#2c71bf" }, 
     { value: "Furniture", label: "Furniture", color: "#9a1d30" }, 
