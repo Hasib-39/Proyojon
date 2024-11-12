@@ -8,7 +8,7 @@ import { GoogleMap, useLoadScript, MarkerF, Autocomplete } from '@react-google-m
 import "../styles/Sell.css";
 
 
-const categories = ["Stationaries", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
+const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
 
 const Sell = () => {
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ const Sell = () => {
   const handleSearchSelect = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace(); // Use the autocomplete instance here
-      if (place.geometry) {
+      if (place && place.geometry) {
         const { location } = place.geometry;
         setCoordinates({
           lat: location.lat(),
@@ -119,6 +119,8 @@ const Sell = () => {
           lng: location.lng(),
         });
         setLocation(place.formatted_address);
+      } else {
+        console.error("Cannot get place or place geometry");
       }
     }
   };

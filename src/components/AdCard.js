@@ -23,6 +23,7 @@ const AdCard = ({ ad }) => {
   const categories = [
     { value: "", label: "All", color: "#a8c7bf" }, 
     { value: "Stationaries", label: "Stationaries", color: "#FF6347" }, 
+    { value: "Books", label: "Books", color: "#442a82" },
     { value: "Clothes", label: "Clothes", color: "#d6bf32" }, 
     { value: "Electronics", label: "Electronics", color: "#2c71bf" }, 
     { value: "Furniture", label: "Furniture", color: "#9a1d30" }, 

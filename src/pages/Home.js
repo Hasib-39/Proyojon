@@ -10,6 +10,7 @@ const Home = () => {
   const categories = [
     { value: "", label: "All", color: "#000000" }, // default black
     { value: "Stationaries", label: "Stationaries", color: "#FF6347" }, // Tomato
+    { value: "Books", label: "Books", color: "#442a82" }, // Violet
     { value: "Clothes", label: "Clothes", color: "#4682B4" }, // SteelBlue
     { value: "Electronics", label: "Electronics", color: "#8A2BE2" }, // BlueViolet
     { value: "Furniture", label: "Furniture", color: "#DAA520" }, // GoldenRod
