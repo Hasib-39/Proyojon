@@ -69,32 +69,7 @@ const Home = () => {
         ))}
       </div>
       
-      {/* <div className="filter-container">
-        <h5>Filter By Category</h5>
-        <select
-          className="form-select filter-select"
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          {categories.map((category) => (
-            <option
-              key={category.value}
-              value={category.value}
-            >
-              {category.label}
-            </option>
-          ))}
-        </select>
-        <label className="location-toggle">
-          <h5>Location Service: {locationService ? "On" : "Off"}</h5>
-          <input
-            type="checkbox"
-            className="toggle-checkbox"
-            onChange={handleToggle}
-            checked={locationService}
-          />
-          <span className="toggle-slider"></span>
-        </label>
-      </div> */}
+      
 
       <h3 className="section-title">Recent Posts</h3>
       <div className="row ads-container">
