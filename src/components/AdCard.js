@@ -22,13 +22,15 @@ const AdCard = ({ ad }) => {
   }, [ad.adId]);
 
   const categories = [
-    { value: "", label: "All", color: "#a8c7bf" }, 
-    { value: "Stationaries", label: "Stationaries", color: "#FF6347" }, 
-    { value: "Books", label: "Books", color: "#442a82" },
-    { value: "Clothes", label: "Clothes", color: "#d6bf32" }, 
-    { value: "Electronics", label: "Electronics", color: "#2c71bf" }, 
-    { value: "Furniture", label: "Furniture", color: "#9a1d30" }, 
-    { value: "Miscellaneous", label: "Miscellaneous", color: "#5c3c92" }, 
+    { value: "", label: "All", color: "#000000", image: "/images/all.png" },
+    { value: "Stationaries", label: "Stationaries", color: "#FF6347", image: "/images/stationaries.png" },
+    { value: "Books", label: "Books", color: "#442a82", image: "/images/books.png" },
+    { value: "Clothes", label: "Clothes", color: "#4682B4", image: "/images/clothes.png" },
+    { value: "Electronics", label: "Electronics", color: "#8A2BE2", image: "/images/electronics.jpeg" },
+    { value: "Furniture", label: "Furniture", color: "#DAA520", image: "/images/furniture.png" },
+    { value: "Vehicles & Parts", label: "Vehicles & Parts", color: "#FF4500", image: "/images/Vehicles.png" }, // Unique color for Vehicles & Parts
+    { value: "Games & Hobbies", label: "Games & Hobbies", color: "#32CD32", image: "/images/Controller.png" }, // Unique color for Games & Hobbies
+    { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
 
   const toggleFavorite = async () => {
