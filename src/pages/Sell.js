@@ -8,7 +8,7 @@ import { GoogleMap, useLoadScript, MarkerF, Autocomplete } from '@react-google-m
 import "../styles/Sell.css";
 
 
-const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture", "Miscellaneous"];
+const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture","Vehicles & Parts","Games & Hobbies" ,"Miscellaneous"];
 
 const Sell = () => {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ const Sell = () => {
     images: [],
     title: "",
     category: "",
+    Price: "",
     contactnum: "",
     description: "",
     error: "",
@@ -40,6 +41,7 @@ const Sell = () => {
     title,
     category,
     contactnum,
+    Price,
     description,
     error,
     loading,
@@ -150,6 +152,7 @@ const Sell = () => {
         images: imgs,
         title,
         category,
+        Price,
         contactnum,
         location, 
         coordinates, 
@@ -172,6 +175,7 @@ const Sell = () => {
         title: '',
         category: '',
         contactnum: '',
+        Price:'',
         description: '',
         loading: false,
       });
@@ -250,6 +254,12 @@ const Sell = () => {
                   <label className="form-label">Contact Number</label>
                   <input type="text" className="form-control" name="contactnum" value={contactnum} onChange={handleChange} />
                 </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Price</label>
+                  <input type="text" className="form-control" name="Price" value={Price} onChange={handleChange} placeholder='Type Free to Donate' />
+                </div>
+
                 <div className="mb-3">
                   <label className="form-label">Item Description & Specific Address</label>
                   <textarea

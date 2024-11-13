@@ -9,6 +9,7 @@ import '../styles/AdCard.css';
 const AdCard = ({ ad }) => {
   const adLink = `/${ad.category.toLowerCase()}/${ad.adId}`;
   const [users, setUsers] = useState([]);
+
   useEffect(() => {
     const docRef = doc(db, 'favorites', ad.adId);
     const unsub = onSnapshot(docRef, (docSnapshot) => {
@@ -18,16 +19,18 @@ const AdCard = ({ ad }) => {
     });
 
     return () => unsub();
-  }, [ad.id]);
+  }, [ad.adId]);
 
   const categories = [
-    { value: "", label: "All", color: "#a8c7bf" }, 
-    { value: "Stationaries", label: "Stationaries", color: "#FF6347" }, 
-    { value: "Books", label: "Books", color: "#442a82" },
-    { value: "Clothes", label: "Clothes", color: "#d6bf32" }, 
-    { value: "Electronics", label: "Electronics", color: "#2c71bf" }, 
-    { value: "Furniture", label: "Furniture", color: "#9a1d30" }, 
-    { value: "Miscellaneous", label: "Miscellaneous", color: "#5c3c92" }, 
+    { value: "", label: "All", color: "#000000", image: "/images/all.png" },
+    { value: "Stationaries", label: "Stationaries", color: "#FF6347", image: "/images/stationaries.png" },
+    { value: "Books", label: "Books", color: "#442a82", image: "/images/books.png" },
+    { value: "Clothes", label: "Clothes", color: "#4682B4", image: "/images/clothes.png" },
+    { value: "Electronics", label: "Electronics", color: "#8A2BE2", image: "/images/electronics.jpeg" },
+    { value: "Furniture", label: "Furniture", color: "#DAA520", image: "/images/furniture.png" },
+    { value: "Vehicles & Parts", label: "Vehicles & Parts", color: "#FF4500", image: "/images/Vehicles.png" }, // Unique color for Vehicles & Parts
+    { value: "Games & Hobbies", label: "Games & Hobbies", color: "#32CD32", image: "/images/Controller.png" }, // Unique color for Games & Hobbies
+    { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
 
   const toggleFavorite = async () => {
@@ -60,14 +63,26 @@ const AdCard = ({ ad }) => {
             <AiOutlineHeart size={30} onClick={toggleFavorite} className="text-danger" />
           )}
         </p>
-        
+          {/* Displaying Price */}
+          {ad.Price ? (
+            <h6 className="card-text">
+              {ad.Price.toLowerCase() === 'free' ? 'Free' : ` ৳${ad.Price}`} {/* Adjust formatting as needed */}
+            </h6>
+          ) : (
+            <h6 className="card-text">
+              Free
+            </h6>
+          )}
+
         <Link to={adLink}>
           <p className="card-text">
             {ad.location ? ad.location : "Unknown"}
           </p>
+
+
           <p className="card-text-moment">
             ~ <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
-            {" - "}<small className="category" style={{backgroundColor : categoryColor}}>{ad.category}</small>
+            {" - "}<small className="category" style={{ backgroundColor: categoryColor }}>{ad.category}</small>
           </p>
         </Link>
       </div>
