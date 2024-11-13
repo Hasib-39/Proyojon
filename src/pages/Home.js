@@ -7,6 +7,7 @@ import "../styles/Home.css"; // Import the CSS file
 const Home = () => {
   const [ads, setAds] = useState([]);
   const [filter, setFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [locationService, setLocationService] = useState(false);
 
   // Define categories with image URLs
@@ -23,6 +24,10 @@ const Home = () => {
   ];
   const handleToggle = () => {
     setLocationService(!locationService); // Toggle between true and false
+  };
+
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value); // Update search query state
   };
 
   const getAds = async () => {
@@ -42,15 +47,35 @@ const Home = () => {
     const adDocs = await getDocs(q);
     let ads = [];
     adDocs.forEach((doc) => ads.push({ ...doc.data() }));
+    
+    // Filter by search query if available
+    if (searchQuery) {
+      ads = ads.filter((ad) =>
+        ad.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
     setAds(ads);
   };
 
   useEffect(() => {
     getAds();
-  }, [filter]);
+  }, [filter, searchQuery]); // Re-fetch ads when searchQuery or filter changes
 
   return (
     <div className="mt-5 container">
+      {/* Header with Search Box */}
+      <div className="header">
+      <img src="/images/search.png" alt="Search Icon" className="search-icon" /> {/* Image icon */}
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearch}
+          placeholder="What are you looking for ?"
+          className="search-input"
+        />
+      </div>
+
       <h3 className="section-title">Explore All Categories</h3>
       <div className="category-container">
         {categories.map((category) => (
@@ -69,8 +94,6 @@ const Home = () => {
           </div>
         ))}
       </div>
-      
-      
 
       <h3 className="section-title">Recent Posts</h3>
       <div className="row ads-container">
