@@ -9,6 +9,7 @@ import '../styles/AdCard.css';
 const AdCard = ({ ad }) => {
   const adLink = `/${ad.category.toLowerCase()}/${ad.adId}`;
   const [users, setUsers] = useState([]);
+
   useEffect(() => {
     const docRef = doc(db, 'favorites', ad.adId);
     const unsub = onSnapshot(docRef, (docSnapshot) => {
@@ -18,7 +19,7 @@ const AdCard = ({ ad }) => {
     });
 
     return () => unsub();
-  }, [ad.id]);
+  }, [ad.adId]);
 
   const categories = [
     { value: "", label: "All", color: "#a8c7bf" }, 
@@ -60,14 +61,26 @@ const AdCard = ({ ad }) => {
             <AiOutlineHeart size={30} onClick={toggleFavorite} className="text-danger" />
           )}
         </p>
-        
+          {/* Displaying Price */}
+          {ad.Price ? (
+            <h6 className="card-text">
+              {ad.Price.toLowerCase() === 'free' ? 'Free' : ` ৳${ad.Price}`} {/* Adjust formatting as needed */}
+            </h6>
+          ) : (
+            <h6 className="card-text">
+              Free
+            </h6>
+          )}
+
         <Link to={adLink}>
           <p className="card-text">
             {ad.location ? ad.location : "Unknown"}
           </p>
+
+
           <p className="card-text-moment">
             ~ <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
-            {" - "}<small className="category" style={{backgroundColor : categoryColor}}>{ad.category}</small>
+            {" - "}<small className="category" style={{ backgroundColor: categoryColor }}>{ad.category}</small>
           </p>
         </Link>
       </div>

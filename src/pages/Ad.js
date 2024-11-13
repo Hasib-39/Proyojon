@@ -124,7 +124,8 @@ const Ad = () => {
           <div className="card">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">
-                <h6 className="card-subtitle mb-2">{ad.title}</h6>
+                <h5 className="card-subtitle mb-2">{ad.title}</h5>
+                <h6 className="card-subtitle mb-2">{ad.Price.toLowerCase() === 'free' ? 'Free' : ` ৳${ad.Price}`} {/* Adjust formatting as needed */} </h6>
                 {/* <AiOutlineHeart size={30} className="text-danger" /> */}
               </div>
               <div className="d-flex justify-content-between">
