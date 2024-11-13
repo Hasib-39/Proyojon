@@ -22,6 +22,7 @@ const Sell = () => {
     images: [],
     title: "",
     category: "",
+    Price: "",
     contactnum: "",
     description: "",
     error: "",
@@ -253,12 +254,12 @@ const Sell = () => {
                   <label className="form-label">Contact Number</label>
                   <input type="text" className="form-control" name="contactnum" value={contactnum} onChange={handleChange} />
                 </div>
-                <div className="mb-3">
-                
 
+                <div className="mb-3">
                   <label className="form-label">Price</label>
-                  <input type="text" className="form-control" name="price" value={Price} onChange={handleChange} placeholder='Type Free to Donate' />
+                  <input type="text" className="form-control" name="Price" value={Price} onChange={handleChange} placeholder='Type Free to Donate' />
                 </div>
+
                 <div className="mb-3">
                   <label className="form-label">Item Description & Specific Address</label>
                   <textarea
