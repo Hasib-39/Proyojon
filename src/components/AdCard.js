@@ -82,7 +82,8 @@ const AdCard = ({ ad }) => {
 
           <p className="card-text-moment">
             ~ <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
-            {" - "}<small className="category" style={{ backgroundColor: categoryColor }}>{ad.category}</small>
+            <br/>
+            <small className="category" style={{ backgroundColor: categoryColor }}>{ad.category}</small>
           </p>
         </Link>
       </div>
