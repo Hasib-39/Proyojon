@@ -40,6 +40,7 @@ const Sell = () => {
     title,
     category,
     contactnum,
+    Price,
     description,
     error,
     loading,
@@ -150,6 +151,7 @@ const Sell = () => {
         images: imgs,
         title,
         category,
+        Price,
         contactnum,
         location, 
         coordinates, 
@@ -172,6 +174,7 @@ const Sell = () => {
         title: '',
         category: '',
         contactnum: '',
+        Price:'',
         description: '',
         loading: false,
       });
@@ -249,6 +252,12 @@ const Sell = () => {
                 <div className="mb-3">
                   <label className="form-label">Contact Number</label>
                   <input type="text" className="form-control" name="contactnum" value={contactnum} onChange={handleChange} />
+                </div>
+                <div className="mb-3">
+                
+
+                  <label className="form-label">Price</label>
+                  <input type="text" className="form-control" name="price" value={Price} onChange={handleChange} placeholder='Type Free to Donate' />
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Item Description & Specific Address</label>
