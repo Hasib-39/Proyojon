@@ -1,107 +1,144 @@
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Category container and items */
 .category-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 40px;
-    text-align: center;
-  }
-  
-  .category-item {
-    cursor: pointer;
-    text-align: center;
-    width: 100px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column; /* Stack icon and label vertically */
-    align-items: center; /* Center align both icon and label */
-  }
-  
-  .category-icon-wrapper {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-size: 60%;
-    background-position: center;
-    background-repeat: no-repeat;
-    overflow: hidden;
-    border: 3px solid #604f4f;
-  }
-  
-  .category-label {
-    margin-top: 8px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    width: 100%; /* Ensures label width matches circle */
-  }
-  /* Main container for ads */
-  .ads-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px; /* Adjust spacing between ads as needed */
-  }
-  
-  /* Each ad item taking 25% width (4 items per row) */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.category-item {
+  cursor: pointer;
+  text-align: center;
+  width: 100px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column; /* Stack icon and label vertically */
+  align-items: center; /* Center align both icon and label */
+}
+
+.category-icon-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-size: 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  border: 3px solid #604f4f;
+}
+
+.category-label {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%; /* Ensures label width matches circle */
+}
+
+/* Main container for ads */
+.ads-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Adjust spacing between ads as needed */
+}
+
+/* Each ad item taking 25% width (4 items per row) */
+.size_ad {
+  flex: 0 0 23%; /* Width of each ad card to ensure 4 items per row */
+  max-width: 23%; /* Ensures it doesn't exceed 23% */
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
   .size_ad {
-    flex: 0 0 23%; /* Width of each ad card to ensure 4 items per row */
-    max-width: 23%; /* Ensures it doesn't exceed 23% */
-    box-sizing: border-box;
+    flex: 0 0 45%; /* Adjust for 2 items per row on smaller screens */
+    max-width: 45%;
   }
-  
-  @media (max-width: 1200px) {
-    .size_ad {
-      flex: 0 0 45%; /* Adjust for 2 items per row on smaller screens */
-      max-width: 45%;
-    }
+}
+
+@media (max-width: 768px) {
+  .size_ad {
+    flex: 0 0 90%; /* Adjust to 1 item per row on extra small screens */
+    max-width: 90%;
   }
-  
-  @media (max-width: 768px) {
-    .size_ad {
-      flex: 0 0 90%; /* Adjust to 1 item per row on extra small screens */
-      max-width: 90%;
-    }
-  }
-  
-  /* Optional: Add some padding and alignment */
-  .section-title {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .filter-container {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  .filter-select {
-    width: 200px;
-    margin: auto;
-  }
-  
-  .location-toggle {
-    display: inline-flex;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .toggle-checkbox {
-    display: none;
-  }
-  
-  .toggle-slider {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
-    background-color: #ccc;
-    border-radius: 12px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  
-  .toggle-checkbox:checked + .toggle-slider {
-    background-color: #4caf50;
-  }
-  
+}
+
+/* Optional: Add some padding and alignment */
+.section-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.filter-select {
+  width: 200px;
+  margin: auto;
+}
+
+.location-toggle {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.toggle-checkbox {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.toggle-checkbox:checked + .toggle-slider {
+  background-color: #4caf50;
+}
+
+/* New styles for the header and search input */
+/* Centered header container with search box */
+.header {
+  display: flex;
+  justify-content: center; /* Center the search box horizontally */
+  padding: 10px;
+  align-items: center;
+}
+
+/* Style for the search input */
+.search-input {
+  width: 60%; /* Make the search box longer */
+  max-width: 600px; /* Limit the maximum width */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #f8f8f8;
+  text-align: left; /* Center placeholder text */
+  font-family: 'Inter';
+}
+.search-icon {
+  margin-right: 10px;
+  width: 30px; /* Adjust icon size as needed */
+  height: 30px;
+}
+.search-input:focus {
+  outline: none;
+  border-color: #4CAF50; /* Change border color on focus */
+  text-align: left; /* Align text to the left when user clicks */
+}
+
