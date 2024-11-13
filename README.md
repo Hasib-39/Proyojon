@@ -21,12 +21,16 @@
 - **Backend**: Firebase (Database, Authentication, and Real-Time Communication)
 
 ## 📸 Screenshots
-# Home Screen
+### Home Screen
 ![Screenshot 2024-11-14 010801](https://github.com/user-attachments/assets/c762ec3c-84f9-4a3d-836b-5f5cfe102588)
-# Chat UI
+### Chat UI
 ![Screenshot 2024-11-14 010859](https://github.com/user-attachments/assets/40097904-6c83-4065-9424-f16ed5cd8ac3)
-# Favourites Page
+### Favourites Page
 ![Screenshot 2024-11-14 010946](https://github.com/user-attachments/assets/9e43b7a0-b6ad-4a38-b9f1-411018363547)
+### Adding Post
+![image](https://github.com/user-attachments/assets/fd3eeffb-cb47-492b-9387-8987b6f2780b)
+### Profile Page
+![image](https://github.com/user-attachments/assets/f93fae11-9834-4256-8db3-496055072308)
 ## 📦 Getting Started
 
 1. **Clone the repository**:
