@@ -17,9 +17,10 @@ const Home = () => {
     { value: "Clothes", label: "Clothes", color: "#4682B4", image: "/images/clothes.png" },
     { value: "Electronics", label: "Electronics", color: "#8A2BE2", image: "/images/electronics.jpeg" },
     { value: "Furniture", label: "Furniture", color: "#DAA520", image: "/images/furniture.png" },
+    { value: "Vehicles & Parts", label: "Vehicles & Parts", color: "#FF4500", image: "/images/misc.png" }, // Unique color for Vehicles & Parts
+    { value: "Games & Hobbies", label: "Games & Hobbies", color: "#32CD32", image: "/images/misc.png" }, // Unique color for Games & Hobbies
     { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
-
   const handleToggle = () => {
     setLocationService(!locationService); // Toggle between true and false
   };
