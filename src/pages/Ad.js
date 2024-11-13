@@ -147,7 +147,7 @@ const Ad = () => {
           </div>
           <div className="card mt-3">
             <div className="card-body">
-              <h5 className="card-title">Donor's Description</h5>
+              <h5 className="card-title">Owner's Description</h5>
               <Link to={`/profile/${ad.postedBy}`}>
                 <div className="d-flex align-items-center">
                   {seller?.photoUrl ? (

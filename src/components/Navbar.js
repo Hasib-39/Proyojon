@@ -72,7 +72,7 @@ const Navbar = () => {
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to={`/sell`}>
-                                        Donate
+                                        Post
                                     </Link>
                                 </li>
                                 <li className="nav-item">
