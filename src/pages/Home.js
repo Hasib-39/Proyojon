@@ -90,7 +90,7 @@ const Home = () => {
                 backgroundImage: `url(${category.image})`,
               }}
             ></div>
-            <p className="category-label">{category.label}</p>
+            <p className={`category-label ${filter === category.value ? 'selected' : ''}`}>{category.label}</p>
           </div>
         ))}
       </div>
