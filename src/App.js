@@ -13,11 +13,15 @@ import Ad from "./pages/Ad";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Chat from "./pages/Chat";
+import { LoadScript } from "@react-google-maps/api";
+
+const libraries = ["geometry"]; // Define libraries to be used with Google Maps
 
 
 function App() {
   return (
     <AuthProvider>
+      <LoadScript googleMapsApiKey={process.env.REACT_APP_MAPS_APIKEY} libraries={libraries}>
       <BrowserRouter>
         <Navbar />
         <Routes>
@@ -35,6 +39,7 @@ function App() {
           <Route path="/" element={<Home />} />
         </Routes>
       </BrowserRouter>
+      </LoadScript>
     </AuthProvider>
   );
 }

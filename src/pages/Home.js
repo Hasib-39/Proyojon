@@ -4,6 +4,7 @@ import AdCard from "../components/AdCard";
 import { db } from "../firebaseConfig";
 import "../styles/Home.css"; // Import the CSS file
 import { FaMapMarkerAlt } from "react-icons/fa"; 
+import { LoadScript } from '@react-google-maps/api';
 
 const Home = () => {
   const [ads, setAds] = useState([]);
@@ -11,6 +12,10 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [locationService, setLocationService] = useState(false);
   const [selectedDivision, setSelectedDivision] = useState("");
+  const [center, setCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default: Dhaka
+  const radius = 10000; // 10 km radius
+
+  const libraries = ["geometry"];
 
   // List of divisions in Bangladesh
   const divisions = [
@@ -39,19 +44,50 @@ const Home = () => {
     { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
+  const handleSearch = (event) => setSearchQuery(event.target.value);
 
   const handleDivisionChange = (event) => {
     const selectedValue = event.target.value;
     if (selectedValue === "Use Current Location") {
       setLocationService(true);
+      getUserLocation();
       setSelectedDivision("");
     } else {
       setLocationService(false);
       setSelectedDivision(selectedValue);
+      updateCenterForDivision(selectedValue);
     }
+  };
+
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        () => setCenter({ lat: 23.8103, lng: 90.4125 }) // Default to Dhaka if location denied
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
+
+  const updateCenterForDivision = (division) => {
+    const coordinates = {
+      Dhaka: { lat: 23.8103, lng: 90.4125 },
+      Chittagong: { lat: 22.3569, lng: 91.7832 },
+      Khulna: { lat: 22.8456, lng: 89.5403 },
+      Rajshahi: { lat: 24.3636, lng: 88.6241 },
+      Barisal: { lat: 22.7010, lng: 90.3535 },
+      Sylhet: { lat: 24.8898, lng: 91.8715 },
+      Rangpur: { lat: 25.7439, lng: 89.2752 },
+      Mymensingh: { lat: 24.7471, lng: 90.4203 },
+      // add other division coordinates as needed
+    };
+    setCenter(coordinates[division] || { lat: 23.8103, lng: 90.4125 });
   };
 
   const getSectionTitle = () => {
@@ -96,14 +132,30 @@ const Home = () => {
     //   );
     // }
 
+    ads = ads.filter((ad) => isWithinRadius(ad.coordinates, center, radius));
+
     setAds(ads);
   };
 
+  function isWithinRadius(adLocation, centerLocation, radius) {
+    if (window.google && window.google.maps && window.google.maps.geometry && window.google.maps.geometry.spherical) {
+        const adLatLng = new window.google.maps.LatLng(adLocation.lat, adLocation.lng);
+        const centerLatLng = new window.google.maps.LatLng(centerLocation.lat, centerLocation.lng);
+        const distance = window.google.maps.geometry.spherical.computeDistanceBetween(adLatLng, centerLatLng);
+        return distance <= radius;
+    } else {
+        console.error("Google Maps geometry library not loaded");
+        return false;
+    }
+}
+
+
   useEffect(() => {
     getAds();
-  }, [filter, searchQuery]);
+  }, [filter, searchQuery, center]);
 
   return (
+    // <LoadScript googleMapsApiKey={process.env.REACT_APP_MAPS_APIKEY} libraries={libraries}>
     <div className="mt-5 container">
       {/* Header with Search Box and Division Dropdown */}
       <div className="header">
@@ -160,6 +212,7 @@ const Home = () => {
         ))}
       </div>
     </div>
+    // </LoadScript>
   );
 };
 
