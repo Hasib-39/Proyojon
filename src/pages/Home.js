@@ -8,13 +8,13 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 const Home = () => {
   const [ads, setAds] = useState([]);
   const [filter, setFilter] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
+  const [searchQuery, setSearchQuery] = useState("");
   const [locationService, setLocationService] = useState(false);
-  const [selectedDivision, setSelectedDivision] = useState(""); // New state for selected division
+  const [selectedDivision, setSelectedDivision] = useState("");
 
   // List of divisions in Bangladesh
   const divisions = [
-    "", // This will represent no selection
+    "",
     "Use Current Location",
     "Dhaka",
     "Chittagong",
@@ -24,7 +24,6 @@ const Home = () => {
     "Sylhet",
     "Rangpur",
     "Mymensingh",
-
   ];
 
   // Define categories with image URLs
@@ -40,16 +39,29 @@ const Home = () => {
     { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
 
-  const handleToggle = () => {
-    setLocationService(!locationService);
-  };
-
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
   const handleDivisionChange = (event) => {
-    setSelectedDivision(event.target.value);
+    const selectedValue = event.target.value;
+    if (selectedValue === "Use Current Location") {
+      setLocationService(true);
+      setSelectedDivision("");
+    } else {
+      setLocationService(false);
+      setSelectedDivision(selectedValue);
+    }
+  };
+
+  const getSectionTitle = () => {
+    if (locationService) {
+      return "Items near you";
+    } else if (selectedDivision) {
+      return `Items near ${selectedDivision}`;
+    } else {
+      return "Recent Posts";
+    }
   };
 
   const getAds = async () => {
@@ -77,50 +89,50 @@ const Home = () => {
       );
     }
 
-    // Filter by selected division if available
-    if (selectedDivision) {
-      ads = ads.filter((ad) =>
-        ad.division && ad.division.toLowerCase() === selectedDivision.toLowerCase()
-      );
-    }
+    // // Filter by selected division if available
+    // if (selectedDivision) {
+    //   ads = ads.filter((ad) =>
+    //     ad.division && ad.division.toLowerCase() === selectedDivision.toLowerCase()
+    //   );
+    // }
 
     setAds(ads);
   };
 
   useEffect(() => {
     getAds();
-  }, [filter, searchQuery, selectedDivision]); // Re-fetch ads when searchQuery, filter, or selectedDivision changes
+  }, [filter, searchQuery]);
 
   return (
     <div className="mt-5 container">
-    {/* Header with Search Box and Division Dropdown */}
-    <div className="header">
-      <div className="modern-select-container">
-        <FaMapMarkerAlt className="select-icon" />
-        <select
-          value={selectedDivision}
-          onChange={handleDivisionChange}
-          className="modern-select"
-        >
-          {divisions.map((division) => (
-            <option key={division} value={division}>
-              {division || "Select Location"}
-            </option>
-          ))}
-        </select>
-      </div>
-
+      {/* Header with Search Box and Division Dropdown */}
+      <div className="header">
+        <div className="modern-select-container">
+          <FaMapMarkerAlt className="select-icon" />
+          <select
+            value={selectedDivision || (locationService ? "Use Current Location" : "")}
+            onChange={handleDivisionChange}
+            className="modern-select"
+          >
+            {divisions.map((division) => (
+              <option key={division} value={division}>
+                {division || "Select Location"}
+              </option>
+            ))}
+          </select>
+        </div>
         <img src="/images/search.png" alt="Search Icon" className="search-icon" />
         <input
           type="text"
           value={searchQuery}
           onChange={handleSearch}
-          placeholder="What are you looking for ?"
+          placeholder="What are you looking for?"
           className="search-input"
-        />
+          />
       </div>
 
-      <h3 className="section-title">Explore All Categories</h3>
+          <h4 className="centreit-asap" >Explore All Categories</h4>
+     
       <div className="category-container">
         {categories.map((category) => (
           <div
@@ -138,8 +150,8 @@ const Home = () => {
           </div>
         ))}
       </div>
+      <h3 className="section-title">{getSectionTitle()}</h3>
 
-      <h3 className="section-title">Recent Posts</h3>
       <div className="row ads-container">
         {ads.map((ad) => (
           <div className="size_ad" key={ad.adId}>
