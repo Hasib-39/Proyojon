@@ -3,12 +3,29 @@ import React, { useEffect, useState } from "react";
 import AdCard from "../components/AdCard";
 import { db } from "../firebaseConfig";
 import "../styles/Home.css"; // Import the CSS file
+import { FaMapMarkerAlt } from "react-icons/fa"; 
 
 const Home = () => {
   const [ads, setAds] = useState([]);
   const [filter, setFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [locationService, setLocationService] = useState(false);
+  const [selectedDivision, setSelectedDivision] = useState(""); // New state for selected division
+
+  // List of divisions in Bangladesh
+  const divisions = [
+    "", // This will represent no selection
+    "Use Current Location",
+    "Dhaka",
+    "Chittagong",
+    "Khulna",
+    "Rajshahi",
+    "Barisal",
+    "Sylhet",
+    "Rangpur",
+    "Mymensingh",
+
+  ];
 
   // Define categories with image URLs
   const categories = [
@@ -18,16 +35,21 @@ const Home = () => {
     { value: "Clothes", label: "Clothes", color: "#4682B4", image: "/images/clothes.png" },
     { value: "Electronics", label: "Electronics", color: "#8A2BE2", image: "/images/electronics.jpeg" },
     { value: "Furniture", label: "Furniture", color: "#DAA520", image: "/images/furniture.png" },
-    { value: "Vehicles & Parts", label: "Vehicles & Parts", color: "#FF4500", image: "/images/Vehicles.png" }, // Unique color for Vehicles & Parts
-    { value: "Games & Hobbies", label: "Games & Hobbies", color: "#32CD32", image: "/images/Controller.png" }, // Unique color for Games & Hobbies
+    { value: "Vehicles & Parts", label: "Vehicles & Parts", color: "#FF4500", image: "/images/Vehicles.png" },
+    { value: "Games & Hobbies", label: "Games & Hobbies", color: "#32CD32", image: "/images/Controller.png" },
     { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
+
   const handleToggle = () => {
-    setLocationService(!locationService); // Toggle between true and false
+    setLocationService(!locationService);
   };
 
   const handleSearch = (event) => {
-    setSearchQuery(event.target.value); // Update search query state
+    setSearchQuery(event.target.value);
+  };
+
+  const handleDivisionChange = (event) => {
+    setSelectedDivision(event.target.value);
   };
 
   const getAds = async () => {
@@ -47,11 +69,18 @@ const Home = () => {
     const adDocs = await getDocs(q);
     let ads = [];
     adDocs.forEach((doc) => ads.push({ ...doc.data() }));
-    
+
     // Filter by search query if available
     if (searchQuery) {
       ads = ads.filter((ad) =>
         ad.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Filter by selected division if available
+    if (selectedDivision) {
+      ads = ads.filter((ad) =>
+        ad.division && ad.division.toLowerCase() === selectedDivision.toLowerCase()
       );
     }
 
@@ -60,13 +89,28 @@ const Home = () => {
 
   useEffect(() => {
     getAds();
-  }, [filter, searchQuery]); // Re-fetch ads when searchQuery or filter changes
+  }, [filter, searchQuery, selectedDivision]); // Re-fetch ads when searchQuery, filter, or selectedDivision changes
 
   return (
     <div className="mt-5 container">
-      {/* Header with Search Box */}
-      <div className="header">
-      <img src="/images/search.png" alt="Search Icon" className="search-icon" /> {/* Image icon */}
+    {/* Header with Search Box and Division Dropdown */}
+    <div className="header">
+      <div className="modern-select-container">
+        <FaMapMarkerAlt className="select-icon" />
+        <select
+          value={selectedDivision}
+          onChange={handleDivisionChange}
+          className="modern-select"
+        >
+          {divisions.map((division) => (
+            <option key={division} value={division}>
+              {division || "Select Location"}
+            </option>
+          ))}
+        </select>
+      </div>
+
+        <img src="/images/search.png" alt="Search Icon" className="search-icon" />
         <input
           type="text"
           value={searchQuery}
