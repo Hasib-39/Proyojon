@@ -152,3 +152,35 @@
   text-align: left; /* Align text to the left when user clicks */
 }
 
+.modern-select-container {
+  left: 30px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #fff;
+  margin-right: 20px; 
+}
+
+.select-icon {
+  margin-right: 8px;
+  color: #555;
+  font-size: 1.2em;
+}
+
+.modern-select {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 5px;
+  width: 100%;
+  background: none;
+  appearance: none;
+}
+
+.centreit-asap{
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
