@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import {
   collection,
   doc,
@@ -15,10 +13,12 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig";
-import { FaUserAlt, FaCloudUploadAlt } from "react-icons/fa";
 import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { FaCloudUploadAlt, FaUserAlt } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 import AdCard from "../components/AdCard";
+import { auth, db, storage } from "../firebaseConfig";
 import useSnapshot from "../utils/useSnapshot";
 
 const monthAndYear = (date) =>
@@ -92,7 +92,14 @@ const Profile = () => {
           <img
             src={user.photoUrl}
             alt={user.name}
-            style={{ widht: "100px", height: "100px", borderRadius: "50%" }}
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              display: "block",
+              margin: "0 auto"
+            }}
           />
         ) : (
           <FaUserAlt size={50} />
