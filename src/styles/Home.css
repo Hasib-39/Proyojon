@@ -40,6 +40,16 @@
   width: 100%; /* Ensures label width matches circle */
 }
 
+.category-label.selected {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  text-decoration: underline;
+  text-decoration-thickness: 2px; /* Makes the underline thicker */
+  text-underline-offset: 4px; /* Adds space between the text and the underline */
+}
 /* Main container for ads */
 .ads-container {
   display: flex;
