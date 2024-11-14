@@ -40,6 +40,16 @@
   width: 100%; /* Ensures label width matches circle */
 }
 
+.category-label.selected {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  text-decoration: underline;
+  text-decoration-thickness: 2px; /* Makes the underline thicker */
+  text-underline-offset: 4px; /* Adds space between the text and the underline */
+}
 /* Main container for ads */
 .ads-container {
   display: flex;
@@ -142,3 +152,37 @@
   text-align: left; /* Align text to the left when user clicks */
 }
 
+.modern-select-container {
+  left: 30px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  padding: 5px;
+  background-color: #fff;
+  margin-right: 20px; 
+}
+
+.select-icon {
+  margin-right: 8px;
+  margin-left: 8px;
+  color: #555;
+  font-size: 1.2em;
+}
+
+.modern-select {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 5px;
+  width: 100%;
+  background: none;
+  appearance: none;
+}
+
+.centreit-asap{
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
