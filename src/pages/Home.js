@@ -68,7 +68,7 @@ const Home = () => {
             lng: position.coords.longitude,
           });
         },
-        () => setCenter({ lat: 23.8103, lng: 90.4125 }) // Default to Dhaka if location denied
+        // () => setCenter({ lat: 23.8103, lng: 90.4125 }) // Default to Dhaka if location denied
       );
     } else {
       console.error("Geolocation is not supported by this browser.");
