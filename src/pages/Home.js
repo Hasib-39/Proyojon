@@ -1,7 +1,5 @@
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 import AdCard from "../components/AdCard";
 import { db } from "../firebaseConfig";
 import "../styles/Home.css";
@@ -113,6 +111,16 @@ const Home = () => {
     }
   };
 
+  const getSectionTitle = () => {
+    if (locationService) {
+      return "Items near you";
+    } else if (selectedDivision) {
+      return `Items near ${selectedDivision}`;
+    } else {
+      return "Recent Posts";
+    }
+  };
+
   const getAds = async () => {
     const adsRef = collection(db, "ads");
     let q = filter
@@ -138,7 +146,8 @@ const Home = () => {
   }, [filter, searchQuery, center]);
 
   return (
-    <div className="container">
+    <div className="mt-5 container">
+      {/* Header with Search Box and Division Dropdown */}
       <div className="header">
         <div className="modern-select-container">
           <FaMapMarkerAlt className="select-icon" />
@@ -154,30 +163,18 @@ const Home = () => {
             ))}
           </select>
         </div>
+        <img src="/images/search.png" alt="Search Icon" className="search-icon" />
         <input
           type="text"
           value={searchQuery}
           onChange={handleSearch}
           placeholder="What are you looking for?"
           className="search-input"
-        />
+          />
       </div>
 
-      <MapContainer center={center} zoom={13} style={{ height: "400px", width: "100%" }}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <Marker position={center}>
-          <Popup>You are here</Popup>
-        </Marker>
-        {ads.map((ad) => (
-          <Marker key={ad.adId} position={[ad.coordinates.lat, ad.coordinates.lng]}>
-            <Popup>{ad.title}</Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-
+          <h4 className="centreit-asap" >Explore All Categories</h4>
+     
       <div className="category-container">
         {categories.map((category) => (
           <div
@@ -191,16 +188,17 @@ const Home = () => {
                 backgroundImage: `url(${category.image})`,
               }}
             ></div>
-            <p className={`category-label ${filter === category.value ? "selected" : ""}`}>
-              {category.label}
-            </p>
+            <p className={`category-label ${filter === category.value ? 'selected' : ''}`}>{category.label}</p>
           </div>
         ))}
       </div>
+      <h3 className="section-title">{getSectionTitle()}</h3>
 
-      <div className="ads-container">
+      <div className="row ads-container">
         {ads.map((ad) => (
-          <AdCard key={ad.adId} ad={ad} />
+          <div className="size_ad" key={ad.adId}>
+            <AdCard ad={ad} />
+          </div>
         ))}
       </div>
     </div>
