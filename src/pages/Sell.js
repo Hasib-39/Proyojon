@@ -5,9 +5,22 @@ import { storage, db, auth } from '../firebaseConfig';
 import { doc, addDoc, collection, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import 'leaflet/dist/leaflet.css';
 import "../styles/Sell.css";
 
+const defaultIcon = L.icon({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41], // default size
+  iconAnchor: [12, 41], // point of the icon which will correspond to marker's location
+  popupAnchor: [1, -34], // point from which the popup should open relative to the iconAnchor
+  shadowSize: [41, 41], // size of the shadow
+});
+
+L.Marker.prototype.options.icon = defaultIcon;
 
 const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture","Vehicles & Parts","Games & Hobbies" ,"Miscellaneous"];
 
@@ -338,6 +351,7 @@ const Sell = () => {
                   <MapClickHandler
                     setCoordinates={setCoordinates}
                     setMapCenter={setMapCenter}
+                    fetchRegionName={fetchRegionName} // Pass fetchRegionName as a prop
                   />
                 </MapContainer>
                 </div>
