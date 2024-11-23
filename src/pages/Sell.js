@@ -47,8 +47,10 @@ const Sell = () => {
   const [location, setLocation] = useState(""); 
   const [coordinates, setCoordinates] = useState(null); 
   const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default location (Dhaka)
+  const [suggestions, setSuggestions] = useState([]); // To store dynamic search suggestions
 
-  const searchRef = useRef(null); // Create a ref for Autocomplete
+  const searchRef = useRef(null); // Reference for the search input
+  const debounceTimeout = useRef(null); // Reference for debounce timeout
 
   const {
     images,
@@ -132,39 +134,43 @@ const Sell = () => {
     }
   };
   
-
-  const handleSearchLoad = (searchInput) => {
-    searchRef.current = searchInput; // Store the search input reference
-  };
-  
-  const handleSearchSelect = async () => {
-    if (searchRef.current) {
-      const query = searchRef.current.value; // Get the search query
-      if (!query.trim()) {
-        console.error("Search query is empty");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
-        );
-        const results = await response.json();
-
-        if (results.length > 0) {
-          const { lat, lon, display_name } = results[0];
-
-          // Update states with fetched data
-          setCoordinates({ lat: parseFloat(lat), lng: parseFloat(lon) });
-          setMapCenter({ lat: parseFloat(lat), lng: parseFloat(lon) });
-          setLocation(display_name);
-        } else {
-          console.error("No results found for the query");
-        }
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-      }
+  const fetchSearchSuggestions = async (query) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
+      );
+      const results = await response.json();
+      setSuggestions(results.map(item => ({
+        display_name: item.display_name,
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+      })));
+    } catch (error) {
+      console.error("Error fetching search suggestions:", error);
     }
+  };
+
+
+  const handleInputChange = (e) => {
+    const query = e.target.value;
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+
+    if (query.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    debounceTimeout.current = setTimeout(() => {
+      fetchSearchSuggestions(query);
+    }, 300); // Debounce delay
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setCoordinates({ lat: suggestion.lat, lng: suggestion.lon });
+    setMapCenter({ lat: suggestion.lat, lng: suggestion.lon });
+    setLocation(suggestion.display_name);
+    setSuggestions([]);
+    searchRef.current.value = suggestion.display_name; // Update the input field with the selected location
   };
   
   const MapUpdater = ({ center }) => {
@@ -320,17 +326,25 @@ const Sell = () => {
                 <div className="mb-3">
                   <label className="form-label">Search Location</label>
                   <input
-                    ref={searchRef} // Reference for the search input
+                    ref={searchRef}
                     type="text"
                     placeholder="Search for a location"
                     className="form-control"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault(); // Prevent default form submission
-                        handleSearchSelect(); // Trigger search
-                      }
-                    }}
+                    onChange={handleInputChange}
                   />
+                  {suggestions.length > 0 && (
+                    <ul className="suggestions-list">
+                      {suggestions.map((suggestion, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleSuggestionClick(suggestion)}
+                          className="suggestion-item"
+                        >
+                          {suggestion.display_name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   <p>Selected Location: {location || "Not selected"}</p>
                 </div>
               </div>
