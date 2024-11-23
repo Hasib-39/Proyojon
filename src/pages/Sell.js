@@ -4,7 +4,8 @@ import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage, db, auth } from '../firebaseConfig';
 import { doc, addDoc, collection, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { GoogleMap, useLoadScript, MarkerF, Autocomplete } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import "../styles/Sell.css";
 
 
@@ -13,10 +14,10 @@ const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furnitur
 const Sell = () => {
   const navigate = useNavigate();
   
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_MAPS_APIKEY,
-    libraries: ["places"], // Ensure libraries prop is provided
-  });
+  // const { isLoaded, loadError } = useLoadScript({
+  //   googleMapsApiKey: process.env.REACT_APP_MAPS_APIKEY,
+  //   libraries: ["places"], // Ensure libraries prop is provided
+  // });
 
   const [values, setValues] = useState({
     images: [],
@@ -34,7 +35,7 @@ const Sell = () => {
   const [coordinates, setCoordinates] = useState(null); 
   const [mapCenter, setMapCenter] = useState({ lat: 23.8103, lng: 90.4125 }); // Default location (Dhaka)
 
-  const autocompleteRef = useRef(null); // Create a ref for Autocomplete
+  const searchRef = useRef(null); // Create a ref for Autocomplete
 
   const {
     images,
@@ -48,84 +49,112 @@ const Sell = () => {
   } = values;
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          setCoordinates({ lat: latitude, lng: longitude });
-          setMapCenter({ lat: latitude, lng: longitude });
-          await fetchRegionName(latitude, longitude);
-        },
-        (error) => {
-          console.error('Error getting geolocation', error);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-    }
+    const fetchCurrentLocation = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              const { latitude, longitude } = position.coords;
+  
+              // Update coordinates and map center
+              setCoordinates({ lat: latitude, lng: longitude });
+              setMapCenter({ lat: latitude, lng: longitude });
+  
+              // Fetch and set location name using Nominatim API
+              await fetchRegionName(latitude, longitude, setLocation);
+            } catch (error) {
+              console.error('Error fetching region name:', error);
+            }
+          },
+          (error) => {
+            console.error('Error getting geolocation:', error);
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+    };
+  
+    fetchCurrentLocation();
   }, []);
+  
 
   const handleChange = (e) => setValues({ ...values, [e.target.name]: e.target.value });
 
-  const handleMapClick = async (event) => {
-    const { latLng } = event;
-    const lat = latLng.lat();
-    const lng = latLng.lng();
-    setCoordinates({ lat, lng });
-    await fetchRegionName(lat, lng);
+  const MapClickHandler = ({ setCoordinates, setMapCenter, fetchRegionName }) => {
+    useMapEvents({
+      click: async (e) => {
+        const { lat, lng } = e.latlng; // Get latitude and longitude from click event
+        setCoordinates({ lat, lng });
+        setMapCenter({ lat, lng });
+        await fetchRegionName(lat, lng); // Fetch region name using the lat/lng
+      },
+    });
+    return null;
   };
 
   const fetchRegionName = async (lat, lng) => {
     try {
+      // Use OpenStreetMap's Nominatim Reverse Geocoding API
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_MAPS_APIKEY}`
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
       );
       const data = await response.json();
-      
-      const areaLevel3 = data.results.find(result =>
-        result.types.includes("administrative_area_level_3")
-      );
-      const areaLevel2 = data.results.find(result =>
-        result.types.includes("administrative_area_level_2")
-      );
+  
+      // Extract relevant location details
+      const areaLevel3 = data.address.village || data.address.town || data.address.city;
+      const areaLevel2 = data.address.state || data.address.region;
   
       let locationString = "Unknown location";
       if (areaLevel3 && areaLevel2) {
-        locationString = `${areaLevel3.address_components[0].long_name}, ${areaLevel2.address_components[0].long_name}`;
+        locationString = `${areaLevel3}, ${areaLevel2}`;
       } else if (areaLevel2) {
-        locationString = areaLevel2.address_components[0].long_name;
+        locationString = areaLevel2;
       }
   
+      // Update location state
       setLocation(locationString);
     } catch (error) {
       console.error("Error fetching region name:", error);
     }
   };
+  
 
-  // Handle the Autocomplete instance and the place change
-  const handleAutocompleteLoad = (autocomplete) => {
-    autocompleteRef.current = autocomplete;
+  const handleSearchLoad = (searchInput) => {
+    searchRef.current = searchInput; // Store the search input reference
   };
-
-  const handleSearchSelect = () => {
-    if (autocompleteRef.current) {
-      const place = autocompleteRef.current.getPlace(); // Use the autocomplete instance here
-      if (place && place.geometry) {
-        const { location } = place.geometry;
-        setCoordinates({
-          lat: location.lat(),
-          lng: location.lng(),
-        });
-        setMapCenter({
-          lat: location.lat(),
-          lng: location.lng(),
-        });
-        setLocation(place.formatted_address);
-      } else {
-        console.error("Cannot get place or place geometry");
+  
+  const handleSearchSelect = async () => {
+    if (searchRef.current) {
+      const query = searchRef.current.value; // Get the query from the input field
+      if (!query) {
+        console.error("Search query is empty");
+        return;
+      }
+  
+      try {
+        // Make a request to the Nominatim search endpoint
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
+        );
+        const results = await response.json();
+  
+        if (results.length > 0) {
+          const { lat, lon, display_name } = results[0];
+  
+          // Update coordinates, map center, and location
+          setCoordinates({ lat: parseFloat(lat), lng: parseFloat(lon) });
+          setMapCenter({ lat: parseFloat(lat), lng: parseFloat(lon) });
+          setLocation(display_name);
+        } else {
+          console.error("No results found for the query");
+        }
+      } catch (error) {
+        console.error("Error fetching search results:", error);
       }
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -187,13 +216,13 @@ const Sell = () => {
     }
   };
 
-  if (!isLoaded) {
-    return <div>Loading...</div>; // Show loading until Google Maps is fully loaded
-  }
+  // if (!isLoaded) {
+  //   return <div>Loading...</div>; // Show loading until Google Maps is fully loaded
+  // }
 
-  if (loadError) {
-    return <div>Error loading Google Maps API</div>; // Show an error message if there is an issue with the Google Maps API
-  }
+  // if (loadError) {
+  //   return <div>Error loading Google Maps API</div>; // Show an error message if there is an issue with the Google Maps API
+  // }
 
   return (
     <div className="container-fluid">
@@ -273,39 +302,44 @@ const Sell = () => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Search Location</label>
-                  {/* <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handleSearchSelect}>
-                    <input type="text" className="form-control" placeholder="Search for a location" />
-                  </Autocomplete> */}
-                  <Autocomplete
-                    onLoad={handleAutocompleteLoad}
-                    onPlaceChanged={handleSearchSelect}
-                  >
-                    <input
-                      type="text"
-                      placeholder="Search for a location"
-                      className="form-control"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault(); // Prevent form submission on Enter
-                          handleSearchSelect(); // Manually trigger the search selection
-                        }
-                      }}
-                    />
-                  </Autocomplete>
+                  <input
+                    ref={searchRef} // Reference for the search input
+                    type="text"
+                    placeholder="Search for a location"
+                    className="form-control"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault(); // Prevent default form submission
+                        handleSearchSelect(); // Trigger search
+                      }
+                    }}
+                  />
                   <p>Selected Location: {location || "Not selected"}</p>
                 </div>
               </div>
               <div className="map-container">
                 <label className="form-label">Location on Map</label>
                 <div style={{ width: '100%', height: '400px' }}>
-                  <GoogleMap
-                    zoom={14}
-                    center={mapCenter}
-                    mapContainerStyle={{ width: '100%', height: '100%' }}
-                    onClick={handleMapClick}
-                  >
-                    {coordinates && <MarkerF position={coordinates} />}
-                  </GoogleMap>
+                <MapContainer
+                  center={mapCenter}
+                  zoom={14}
+                  style={{ width: '100%', height: '100%' }}
+                >
+                  {/* Add the OSM Tile Layer */}
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  {/* Add a Marker if Coordinates are Selected */}
+                  {coordinates && (
+                    <Marker position={[coordinates.lat, coordinates.lng]} />
+                  )}
+                  {/* Handle Map Clicks */}
+                  <MapClickHandler
+                    setCoordinates={setCoordinates}
+                    setMapCenter={setMapCenter}
+                  />
+                </MapContainer>
                 </div>
               </div>
             </div>
