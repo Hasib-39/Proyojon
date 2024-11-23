@@ -28,8 +28,8 @@ const AdCard = ({ ad }) => {
     { value: "Clothes", label: "Clothes", color: "#4682B4", image: "/images/clothes.png" },
     { value: "Electronics", label: "Electronics", color: "#8A2BE2", image: "/images/electronics.jpeg" },
     { value: "Furniture", label: "Furniture", color: "#DAA520", image: "/images/furniture.png" },
-    { value: "Vehicles & Parts", label: "Vehicles & Parts", color: "#FF4500", image: "/images/Vehicles.png" }, // Unique color for Vehicles & Parts
-    { value: "Games & Hobbies", label: "Games & Hobbies", color: "#32CD32", image: "/images/Controller.png" }, // Unique color for Games & Hobbies
+    { value: "Vehicles & Parts", label: "Vehicles & Parts", color: "#FF4500", image: "/images/Vehicles.png" },
+    { value: "Games & Hobbies", label: "Games & Hobbies", color: "#32CD32", image: "/images/Controller.png" },
     { value: "Miscellaneous", label: "Miscellaneous", color: "#FF69B4", image: "/images/misc.png" },
   ];
 
@@ -57,32 +57,30 @@ const AdCard = ({ ad }) => {
           <Link to={adLink} >
             <h5 className="card-title">{ad.title}</h5>
           </Link>
-          {users?.includes(auth.currentUser?.uid) ? (
-            <AiFillHeart size={30} onClick={toggleFavorite} className="text-danger" />
-          ) : (
-            <AiOutlineHeart size={30} onClick={toggleFavorite} className="text-danger" />
-          )}
+          <div className="d-flex flex-column align-items-center">
+            {users?.includes(auth.currentUser?.uid) ? (
+              <AiFillHeart size={30} onClick={toggleFavorite} className="text-danger" />
+            ) : (
+              <AiOutlineHeart size={30} onClick={toggleFavorite} className="text-danger" />
+            )}
+            <small className="text-muted">{users.length} </small> {/* Display favorite count */}
+          </div>
         </p>
-          {/* Displaying Price */}
-          {ad.Price ? (
-            <h6 className="card-text">
-              {ad.Price.toLowerCase() === 'free' ? 'Free' : ` ৳${ad.Price}`} {/* Adjust formatting as needed */}
-            </h6>
-          ) : (
-            <h6 className="card-text">
-              Free
-            </h6>
-          )}
-
+        {/* Displaying Price */}
+        {ad.Price ? (
+          <h6 className="card-text">
+            {ad.Price.toLowerCase() === 'free' ? 'Free' : ` ৳${ad.Price}`}
+          </h6>
+        ) : (
+          <h6 className="card-text">Free</h6>
+        )}
         <Link to={adLink}>
           <p className="card-text">
             {ad.location ? ad.location : "Unknown"}
           </p>
-
-
           <p className="card-text-moment">
             ~ <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
-            <br/>
+            <br />
             <small className="category" style={{ backgroundColor: categoryColor }}>{ad.category}</small>
           </p>
         </Link>
