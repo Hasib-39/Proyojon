@@ -4,7 +4,7 @@ import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage, db, auth } from '../firebaseConfig';
 import { doc, addDoc, collection, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -139,23 +139,22 @@ const Sell = () => {
   
   const handleSearchSelect = async () => {
     if (searchRef.current) {
-      const query = searchRef.current.value; // Get the query from the input field
-      if (!query) {
+      const query = searchRef.current.value; // Get the search query
+      if (!query.trim()) {
         console.error("Search query is empty");
         return;
       }
-  
+
       try {
-        // Make a request to the Nominatim search endpoint
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
         );
         const results = await response.json();
-  
+
         if (results.length > 0) {
           const { lat, lon, display_name } = results[0];
-  
-          // Update coordinates, map center, and location
+
+          // Update states with fetched data
           setCoordinates({ lat: parseFloat(lat), lng: parseFloat(lon) });
           setMapCenter({ lat: parseFloat(lat), lng: parseFloat(lon) });
           setLocation(display_name);
@@ -168,6 +167,11 @@ const Sell = () => {
     }
   };
   
+  const MapUpdater = ({ center }) => {
+    const map = useMap();
+    map.setView(center, map.getZoom());
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -347,6 +351,7 @@ const Sell = () => {
                   {coordinates && (
                     <Marker position={[coordinates.lat, coordinates.lng]} />
                   )}
+                  <MapUpdater center={mapCenter} />
                   {/* Handle Map Clicks */}
                   <MapClickHandler
                     setCoordinates={setCoordinates}
