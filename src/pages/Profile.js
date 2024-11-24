@@ -21,6 +21,9 @@ import AdCard from "../components/AdCard";
 import { auth, db, storage } from "../firebaseConfig";
 import useSnapshot from "../utils/useSnapshot";
 
+const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture","Vehicles & Parts","Games & Hobbies" ,"Miscellaneous"];
+
+
 const monthAndYear = (date) =>
   `${moment(date).format("MMMM").slice(0, 3)} ${moment(date).format("YYYY")}`;
 
@@ -28,9 +31,31 @@ const Profile = () => {
   const { id } = useParams();  
   const [img, setImg] = useState("");
   const [ads, setAds] = useState([]);
+  const [interests, setInterests] = useState([]); // Default to user's saved interests
 
   const { val: user } = useSnapshot("users", id);
 
+  const handleInterestChange = (category) => {
+    setInterests((prev) =>
+      prev.includes(category)
+        ? prev.filter((interest) => interest !== category) // Remove if unchecked
+        : [...prev, category] // Add if checked
+    );
+  };
+
+  const saveInterests = async () => {
+    try {
+      await updateDoc(doc(db, "users", auth.currentUser.uid), {
+        interests,
+      });
+      alert("Interests updated successfully!");
+    } catch (error) {
+      console.error("Error updating interests:", error);
+      alert("Failed to update interests. Please try again.");
+    }
+  };
+  
+  
   const uploadImage = async () => {
     // create image reference
     const imgRef = ref(storage, `profile/${Date.now()} - ${img.name}`);
@@ -68,11 +93,14 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    if (user) {
+      setInterests(user.interests || []);
+    }
     if (img) {
       uploadImage();
     }
     getAds();
-  }, [img]);
+  }, [img, user]);
 
   const deletePhoto = async () => {
     const confirm = window.confirm("Delete photo permanently?");
@@ -134,6 +162,37 @@ const Profile = () => {
             ) : null}
           </ul>
         </div>
+
+        <div className="dropdown my-3 text-center">
+          <button
+            className="btn btn-secondary btn-sm dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Select Interests
+          </button>
+          <ul className="dropdown-menu">
+            {categories.map((category) => (
+              <li key={category} className="dropdown-item">
+                <input
+                  type="checkbox"
+                  id={category}
+                  value={category}
+                  checked={interests.includes(category)}
+                  onChange={(e) => handleInterestChange(e.target.value)}
+                />
+                <label htmlFor={category} className="ms-2">{category}</label>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <h4>Interests</h4>
+        <p>{interests.length ? interests.join(", ") : "No interests selected yet."}</p>
+        <button className="btn btn-primary btn-sm mt-2" onClick={saveInterests}>
+          Save Interests
+        </button>
+
         <p>Member since {monthAndYear(user.createdAt.toDate())}</p>
       </div>
       <div className="col-sm-10 col-md-9">
