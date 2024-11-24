@@ -15,11 +15,13 @@ import {
 } from "firebase/storage";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { FaCloudUploadAlt, FaUserAlt } from "react-icons/fa";
+import { FaCloudUploadAlt, FaUserAlt, FaBell } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import AdCard from "../components/AdCard";
 import { auth, db, storage } from "../firebaseConfig";
 import useSnapshot from "../utils/useSnapshot";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture","Vehicles & Parts","Games & Hobbies" ,"Miscellaneous"];
 
@@ -31,6 +33,8 @@ const Profile = () => {
   const { id } = useParams();  
   const [img, setImg] = useState("");
   const [ads, setAds] = useState([]);
+  const [allAds, setAllAds] = useState([]);
+  const [dropdownVisible, setDropdownVisible] = useState(false); 
   const [interests, setInterests] = useState([]); // Default to user's saved interests
 
   const { val: user } = useSnapshot("users", id);
@@ -48,10 +52,10 @@ const Profile = () => {
       await updateDoc(doc(db, "users", auth.currentUser.uid), {
         interests,
       });
-      alert("Interests updated successfully!");
+      toast.success("Interests updated successfully");
     } catch (error) {
       console.error("Error updating interests:", error);
-      alert("Failed to update interests. Please try again.");
+      toast.error("Failed to update interests");
     }
   };
   
@@ -72,6 +76,7 @@ const Profile = () => {
       photoPath: result.ref.fullPath,
     });
     setImg("");
+    toast.success("Photo uploaded successfully");
   };
 
   const getAds = async () => {
@@ -91,7 +96,33 @@ const Profile = () => {
     });
     setAds(ads);
   };
+  
+  const getAllAds = async () => {
+    const currentDate = new Date();
+    
+    // Calculate the date 3 days ago
+    const threeDaysAgo = new Date(currentDate.setDate(currentDate.getDate() - 3));
+    // create collection reference
+    const adsRef = collection(db, "ads");
+    // execute query
+    const q = query(
+      adsRef,
+      where("publishedAt", ">=", threeDaysAgo),
+      orderBy("publishedAt", "desc")
+    );
+    // get data from firestore
+    const docs = await getDocs(q);
+    let ads = [];
+    docs.forEach((doc) => {
+      ads.push({ ...doc.data() });
+    });
+    setAllAds(ads);
+  };
 
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible); // Toggle the dropdown visibility
+  };
+  
   useEffect(() => {
     if (user) {
       setInterests(user.interests || []);
@@ -100,6 +131,7 @@ const Profile = () => {
       uploadImage();
     }
     getAds();
+    getAllAds();
   }, [img, user]);
 
   const deletePhoto = async () => {
@@ -111,7 +143,10 @@ const Profile = () => {
         photoPath: "",
       });
     }
+    toast.success("Photo removed successfully");
   };
+
+  const filteredAds = allAds.filter((ad) => interests.some((interest) => ad.category.includes(interest)));
 
   return user ? (
     <div className="mt-5 container row">
@@ -197,6 +232,28 @@ const Profile = () => {
       </div>
       <div className="col-sm-10 col-md-9">
         <h3>{user.name}</h3>
+        <div className="position-relative">
+          <FaBell
+            size={30}
+            onClick={toggleDropdown} // Toggle the dropdown when clicked
+            style={{ cursor: "pointer", color: "maroon", right: "50px", top: "10px", position: "absolute" }}
+          />
+          {dropdownVisible && (
+            <div className="dropdown-menu show" style={{ position: "absolute", top: "35px", right: "50px", width: "300px", maxHeight: "300px", overflowY: "auto" }}>
+              <ul className="list-group">
+                {filteredAds.length > 0 ? (
+                  filteredAds.map((ad) => (
+                    <li key={ad.adId} className="list-group-item" >
+                      <AdCard ad={ad} />
+                    </li>
+                  ))
+                ) : (
+                  <li className="list-group-item">No ads found for your interests.</li>
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
         <hr />
         {ads.length ? (
           <h4>Published Ads</h4>
@@ -211,6 +268,7 @@ const Profile = () => {
           ))}
         </div>
       </div>
+      <ToastContainer />
     </div>
   ) : null;
 };
