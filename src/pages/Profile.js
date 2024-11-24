@@ -14,7 +14,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaCloudUploadAlt, FaUserAlt, FaBell } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import AdCard from "../components/AdCard";
@@ -36,6 +36,7 @@ const Profile = () => {
   const [allAds, setAllAds] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false); 
   const [interests, setInterests] = useState([]); // Default to user's saved interests
+  const hasNotified = useRef(false);
 
   const { val: user } = useSnapshot("users", id);
 
@@ -147,6 +148,13 @@ const Profile = () => {
   };
 
   const filteredAds = allAds.filter((ad) => interests.some((interest) => ad.category.includes(interest)));
+
+  useEffect(() => {
+    if (filteredAds.length > 0 && !hasNotified.current) {
+      toast.info(`You have ${filteredAds.length} ads that match your interests!`);
+      hasNotified.current = true;
+    }
+  }, [filteredAds]);
 
   return user ? (
     <div className="mt-5 container row">
