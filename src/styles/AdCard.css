@@ -31,3 +31,17 @@
     transform: scale(1.1);
     z-index: 10;
 }
+
+.booked-badge {
+    position: absolute;
+    top: 10px;
+    left: -20px;
+    background: red;
+    color: white;
+    padding: 5px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    transform: rotate(-20deg);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
