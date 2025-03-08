@@ -58,6 +58,24 @@ const Ad = () => {
     }
   };
 
+  const toggleAdStatus = async () => {
+    try {
+      const confirm = window.confirm(
+        `Mark this ad as ${ad.isDonated ? "available" : "booked"}?`
+      );
+      if (confirm) {
+        await setDoc(
+          doc(db, "ads", id),
+          { isDonated: !ad.isDonated },
+          { merge: true }
+        );
+        setAd((prev) => ({ ...prev, isDonated: !prev.isDonated }));
+      }
+    } catch (error) {
+      console.error("Error updating ad status:", error);
+    }
+  };
+
   const createChatroom = async () => {
     const loggedInUser = auth.currentUser.uid;
     const chatId =
@@ -135,13 +153,26 @@ const Ad = () => {
                     <Moment fromNow>{ad.publishedAt.toDate()}</Moment>
                   </small>
                 </p>
-                {ad.postedBy === auth.currentUser?.uid && (
+                {/* {ad.postedBy === auth.currentUser?.uid && (
                   <FaTrashAlt
                     size={20}
                     className="text-danger"
                     onClick={deleteAd}
                   />
-                )}
+                )} */}
+
+                {ad.postedBy === auth.currentUser?.uid && (
+           <div className="d-flex align-items-center">
+              <button
+               className={`btn ${ad.isDonated ? "btn-warning" : "btn-success"} btn-sm me-2`}
+            onClick={toggleAdStatus}
+            >
+            {ad.isDonated ? "Unmark as Booked" : "Mark as Booked"}
+            </button>
+          <FaTrashAlt size={20} className="text-danger" onClick={deleteAd} />
+          </div>
+)}
+
               </div>
             </div>
           </div>
