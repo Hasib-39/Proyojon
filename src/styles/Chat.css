@@ -102,11 +102,21 @@ body {
 }
 
 .user2-title {
+ 
   font-weight: 600;
   font-size: 1.25rem;
   color: var(--dark-text);
-  margin: 0;
+  margin-left: 10px;
   text-align: center; 
+  align-items: center;
+
+}
+
+.user2-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 10px; 
 }
 
 .user2-img {
@@ -361,3 +371,11 @@ body {
     order: 3;
   }
 }
+.delete-conversation-btn {
+    cursor: pointer;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    margin-left: 100px; 
+}
+  

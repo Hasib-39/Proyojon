@@ -20,6 +20,12 @@ import MessageForm from "../components/MessageForm";
 import User from "../components/User";
 import { auth, db } from "../firebaseConfig";
 import "../styles/Chat.css";
+import { FaTrashAlt } from 'react-icons/fa';
+
+
+
+// Function to delete the conversation
+
 
 const Chat = () => {
   const [chat, setChat] = useState(null);
@@ -30,7 +36,45 @@ const Chat = () => {
   const location = useLocation();
   const user1 = auth.currentUser?.uid;
   const currentChatIdRef = useRef(null);
-
+  
+  const deleteConversation = async () => {
+    if (!chat) return;
+  
+    const chatId = currentChatIdRef.current;
+    if (!chatId) return;
+  
+    try {
+      // Immediately clear messages from the UI
+      setMsgs([]);
+  
+      // Delete all messages in the conversation from Firestore
+      const msgsRef = collection(db, "messages", chatId, "chat");
+      const msgsSnapshot = await getDocs(msgsRef);
+      const deletePromises = msgsSnapshot.docs.map((doc) => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+  
+      // Delete the conversation metadata from Firestore
+      await deleteDoc(doc(db, "messages", chatId));
+  
+      // Also remove the conversation from the inbox collection
+      const inboxRef = collection(db, "inbox"); // Replace with the correct inbox collection
+      const inboxSnapshot = await getDocs(inboxRef);
+      const conversationDoc = inboxSnapshot.docs.find(doc => doc.data().chatId === chatId);
+      if (conversationDoc) {
+        await deleteDoc(conversationDoc.ref);
+      }
+  
+      // Remove the conversation from the users list
+      setUsers(prevUsers => prevUsers.filter(user => user.ad.adId !== chat.ad.adId));
+  
+      // Clear the current chat state
+      setChat(null);
+      currentChatIdRef.current = null;
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+    }
+  };
+  
   const selectUser = async (user) => {
     if (!user || !user.ad) return;
 
@@ -229,22 +273,33 @@ const Chat = () => {
         {chat ? (
           <>
             <div className="text-center mt-1 user2-container">
-              {chat.other.photoUrl ? (
-              <img
-                src={chat.other.photoUrl}
-                alt={chat.other.name}
-                className="user2-img"
-              />
-              ):(
-                <FaUserCircle size={50} />
-              )}
-              <h3 className="user2-title">{chat.other.name}</h3>
-            </div>
-            <div className="messages overflow-auto">
+               {chat.other.photoUrl ? (
+                 <img
+                   src={chat.other.photoUrl}
+                   alt={chat.other.name}
+                   className="user2-img"
+                 />
+               ) : (
+                 <FaUserCircle size={50} />
+               )}
+               <div className="user2-title-container">
+                 <h3 className="user2-title">{chat.other.name}</h3>
+                 {/* Trash bin button to delete conversation */}
+                 <div
+                   className="delete-conversation-btn"
+                   onClick={deleteConversation}
+                   title="Delete Conversation"
+                 >
+                   <FaTrashAlt size={25} color="red" />
+                 </div>
+               </div>
+             </div>
+             <div className="messages overflow-auto">
               {msgs.map((msg, i) => (
                 <Message key={i} msg={msg} user1={user1} />
               ))}
             </div>
+
             <MessageForm
               text={text}
               setText={setText}
@@ -259,44 +314,44 @@ const Chat = () => {
       </div>
       <div className="col-3 col-md-3 position-relative chat-info">
         <div className="test">
-        {chat && (
-          <>
-            {chat.other.photoUrl ? (
-              <img
-                src={chat.other.photoUrl}
-                alt={chat.other.name}
-                className="user2-img"
-              />
-              ):(
-                <FaUserCircle size={50} />
-            )}
-            <h3 className="chat-title mt-2">{chat.other.name}</h3>
-            <small className={`${online[chat.other.uid] ? "online" : "offline"}`}>
-              {online[chat.other.uid] ? "Active now" : "Offline"}
-            </small>
-            <br />
-            <div className="ad-details text-center mt-3">
-              <div className="p-2 user2-container">
+          {chat && (
+            <>
+              {chat.other.photoUrl ? (
                 <img
-                  src={chat.ad.images[0]?.url}
-                  alt={chat.ad.title}
-                  className="img-thumbnail mb-2"
+                  src={chat.other.photoUrl}
+                  alt={chat.other.name}
+                  className="user2-img"
                 />
+              ) : (
+                <FaUserCircle size={50} />
+              )}
+              <h3 className="chat-title mt-2">{chat.other.name}</h3>
+              <small className={`${online[chat.other.uid] ? "online" : "offline"}`}>
+                {online[chat.other.uid] ? "Active now" : "Offline"}
+              </small>
+              <br />
+              <div className="ad-details text-center mt-3">
+                <div className="p-2 user2-container">
+                  <img
+                    src={chat.ad.images[0]?.url}
+                    alt={chat.ad.title}
+                    className="img-thumbnail mb-2"
+                  />
+                </div>
+                <div>
+                  <h6 className="ad-title mb-1">{chat.ad.title}</h6>
+                  <small className="text-muted">{chat.ad.price}</small>
+                </div>
+                <Link
+                  className="btn btn-secondary btn-sm mt-2"
+                  to={`/${chat.ad.category.toLowerCase()}/${chat.ad.adId}`}
+                >
+                  View Post
+                </Link>
               </div>
-              <div>
-                <h6 className="ad-title mb-1">{chat.ad.title}</h6>
-                <small className="text-muted">{chat.ad.price}</small>
-              </div>
-              <Link
-                className="btn btn-secondary btn-sm mt-2"
-                to={`/${chat.ad.category.toLowerCase()}/${chat.ad.adId}`}
-              >
-                View Post
-              </Link>
-            </div>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
