@@ -6,31 +6,38 @@ const MyFavorites = () => {
   const [ads, setAds] = useState([]);
 
   const getAds = async () => {
-    // get ads from favorite collection
     const favRef = collection(db, "favorites");
     const q = query(
       favRef,
       where("users", "array-contains", auth.currentUser.uid)
     );
     const docSnap = await getDocs(q);
-
+  
     let promises = [];
     docSnap.forEach((doc) => {
       const adsRef = collection(db, "ads");
       const adsQuery = query(adsRef, where(documentId(), "==", doc.id));
-      promises.push(getDocs(adsQuery));
+      promises.push({ docId: doc.id, usersCount: doc.data().users.length, adsQuery });
     });
-
-    const docs = await Promise.all(promises);
+  
+    const docs = await Promise.all(
+      promises.map(({ adsQuery }) => getDocs(adsQuery))
+    );
+  
     let ads = [];
-    docs.forEach((dSnap) => {
+    docs.forEach((dSnap, index) => {
       dSnap.forEach((adDoc) => {
-        ads.push({ ...adDoc.data() });
+        ads.push({
+          ...adDoc.data(),
+          adId: adDoc.id,
+          usersCount: promises[index].usersCount,
+        });
       });
     });
-
+  
     setAds(ads);
   };
+  
 
   useEffect(() => {
     getAds();
