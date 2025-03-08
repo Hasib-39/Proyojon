@@ -244,7 +244,7 @@ const Profile = () => {
           <FaBell
             size={30}
             onClick={toggleDropdown} // Toggle the dropdown when clicked
-            style={{ cursor: "pointer", color: "maroon", right: "50px", top: "10px", position: "absolute" }}
+            style={{ cursor: "pointer", color: "maroon", right: "50px", top: "10px", position: "absolute",marginTop: "10px",}}
           />
           {dropdownVisible && (
             <div className="dropdown-menu show" style={{ position: "absolute", top: "35px", right: "50px", width: "300px", maxHeight: "300px", overflowY: "auto" }}>

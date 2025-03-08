@@ -36,11 +36,13 @@ const User = ({ user, selectUser, chat, online, user1 }) => {
       <span
         style={{
           position: "absolute",
-          width: "10px",
-          height: "10px",
+          width: "15px",
+          height: "15px",
           top: 45,
           left: 35,
           borderRadius: "50%",
+          border: "3px solid white", 
+          backgroundColor: "transparent",
         }}
         className={`${online[user.other.uid] ? "bg-success" : "bg-danger"}`}
       ></span>
