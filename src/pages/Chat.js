@@ -135,25 +135,43 @@ const Chat = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!chat || !chat.ad) return;
-
+    if (!chat || !chat.ad || text.trim() === "") return;
+  
     const user2 = chat.other.uid;
     const chatId =
       user1 > user2
         ? `${user1}.${user2}.${chat.ad.adId}`
         : `${user2}.${user1}.${chat.ad.adId}`;
-    await addDoc(collection(db, "messages", chatId, "chat"), {
+  
+    // Create a temporary message object
+    const newMsg = {
       text,
       sender: user1,
-      createdAt: Timestamp.fromDate(new Date()),
-    });
-    await updateDoc(doc(db, "messages", chatId), {
-      lastText: text,
-      lastSender: user1,
-      lastUnread: true,
-    });
+      createdAt: Timestamp.now(), // Keep it consistent with Firestore timestamps
+      tempId: Date.now(), // Temporary ID for UI rendering before Firestore syncs
+    };
+  
+    // Optimistically update the UI with the new message
+    setMsgs((prevMsgs) => [...prevMsgs, newMsg]);
     setText("");
+  
+    try {
+      // Add message to Firestore
+      await addDoc(collection(db, "messages", chatId, "chat"), newMsg);
+  
+      // Update last message details in Firestore
+      await updateDoc(doc(db, "messages", chatId), {
+        lastText: text,
+        lastSender: user1,
+        lastUnread: true,
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      // Rollback UI update in case of an error
+      setMsgs((prevMsgs) => prevMsgs.filter((msg) => msg.tempId !== newMsg.tempId));
+    }
   };
+  
 
   return (
     <div className="row g-0">
