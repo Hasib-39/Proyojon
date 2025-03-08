@@ -12,7 +12,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import Message from "../components/Message";
@@ -29,6 +29,7 @@ const Chat = () => {
   const [online, setOnline] = useState({});
   const location = useLocation();
   const user1 = auth.currentUser?.uid;
+  const currentChatIdRef = useRef(null);
 
   const selectUser = async (user) => {
     if (!user || !user.ad) return;
@@ -39,13 +40,21 @@ const Chat = () => {
       user1 > user2
         ? `${user1}.${user2}.${user.ad.adId}`
         : `${user2}.${user1}.${user.ad.adId}`;
+    
+    // Store the current chat ID in the ref
+    currentChatIdRef.current = id;
+    
     const msgsRef = collection(db, "messages", id, "chat");
     const q = query(msgsRef, orderBy("createdAt", "asc"));
     const unsub = onSnapshot(q, (querySnapshot) => {
-      let msgs = [];
-      querySnapshot.forEach((doc) => msgs.push(doc.data()));
-      setMsgs(msgs);
+      // Only update messages if this is still the active chat
+      if (currentChatIdRef.current === id) {
+        let msgs = [];
+        querySnapshot.forEach((doc) => msgs.push(doc.data()));
+        setMsgs(msgs);
+      }
     });
+    
     const docSnap = await getDoc(doc(db, "messages", id));
     if (docSnap.exists()) {
       if (docSnap.data().lastSender !== user1 && docSnap.data().lastUnread) {
@@ -63,13 +72,18 @@ const Chat = () => {
     const buyer = await getDoc(doc(db, "users", user1));
     const seller = await getDoc(doc(db, "users", ad.postedBy));
     setChat({ ad, me: buyer.data(), other: seller.data() });
+    
+    const chatId =
+      user1 > ad.postedBy
+        ? `${user1}.${ad.postedBy}.${ad.adId}`
+        : `${ad.postedBy}.${user1}.${ad.adId}`;
+    
+    // Store the current chat ID in the ref
+    currentChatIdRef.current = chatId;
+    
     const adRef = doc(db, "ads", ad.adId);
     const unsubAd = onSnapshot(adRef, async (adSnap) => {
-      if (!adSnap.exists()) {
-        const chatId =
-          user1 > ad.postedBy
-            ? `${user1}.${ad.postedBy}.${ad.adId}`
-            : `${ad.postedBy}.${user1}.${ad.adId}`;
+      if (!adSnap.exists() && currentChatIdRef.current === chatId) {
         const chatRef = collection(db, "messages", chatId, "chat");
         const chatSnapshot = await getDocs(chatRef);
         const deletePromises = chatSnapshot.docs.map((doc) =>
@@ -78,9 +92,26 @@ const Chat = () => {
         await Promise.all(deletePromises);
         await deleteDoc(doc(db, "messages", chatId));
         setChat(null);
+        currentChatIdRef.current = null;
       }
     });
-    return () => unsubAd();
+    
+    // Set up message listener for this chat
+    const msgsRef = collection(db, "messages", chatId, "chat");
+    const q = query(msgsRef, orderBy("createdAt", "asc"));
+    const unsubMsgs = onSnapshot(q, (querySnapshot) => {
+      // Only update messages if this is still the active chat
+      if (currentChatIdRef.current === chatId) {
+        let msgs = [];
+        querySnapshot.forEach((doc) => msgs.push(doc.data()));
+        setMsgs(msgs);
+      }
+    });
+    
+    return () => {
+      unsubAd();
+      unsubMsgs();
+    };
   };
 
   const getList = async () => {
@@ -90,6 +121,7 @@ const Chat = () => {
     const messages = msgsSnap.docs.map((doc) => doc.data());
     const users = [];
     const unsubscribes = [];
+    
     for (const message of messages) {
       const adRef = doc(db, "ads", message.ad);
       const meRef = doc(
@@ -102,25 +134,31 @@ const Chat = () => {
         "users",
         message.users.find((id) => id !== user1)
       );
+      
       const adDoc = await getDoc(adRef);
       const meDoc = await getDoc(meRef);
       const otherDoc = await getDoc(otherRef);
+      
       if (adDoc.exists() && meDoc.exists() && otherDoc.exists()) {
         users.push({
           ad: adDoc.data(),
           me: meDoc.data(),
           other: otherDoc.data(),
         });
+        
         const unsub = onSnapshot(otherRef, (doc) => {
           setOnline((prev) => ({
             ...prev,
             [doc.data().uid]: doc.data().isOnline,
           }));
         });
+        
         unsubscribes.push(unsub);
       }
     }
+    
     setUsers(users);
+    
     return () => {
       unsubscribes.forEach((unsubscribe) => unsubscribe());
     };
@@ -171,7 +209,6 @@ const Chat = () => {
       setMsgs((prevMsgs) => prevMsgs.filter((msg) => msg.tempId !== newMsg.tempId));
     }
   };
-  
 
   return (
     <div className="row g-0">
