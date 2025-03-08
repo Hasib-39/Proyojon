@@ -43,11 +43,13 @@ const AdCard = ({ ad }) => {
   const categoryColor = categories.find(cat => cat.value === ad.category)?.color || "#000000";
 
   return (
-    <div className="card position-relative">
-      {/* Booked Badge */}
-      {ad.isDonated && (
+    //Mark as booked
+  <div className='card position-relative'>
+    {ad.isDonated && (
+      <div className="booked-badge-wrapper">
         <div className="booked-badge">Booked</div>
-      )}
+      </div>
+    )}
 
       <Link to={adLink}>
         <img
