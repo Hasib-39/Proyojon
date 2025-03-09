@@ -2,6 +2,7 @@ import { signOut } from "firebase/auth";
 import { doc, updateDoc, collection, query, where, onSnapshot } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useSnapshot from "../utils/useSnapshot";
 import { auth, db } from "../firebaseConfig";
 import "../styles/Navbar.css";
 
@@ -9,6 +10,8 @@ const Navbar = () => {
     const [unreadCount, setUnreadCount] = useState(0);
     const user1 = auth.currentUser?.uid; // Get the user UID
     const navigate = useNavigate();
+    const { val: user } = useSnapshot("users", user1); // Avoid passing undefined
+
 
     useEffect(() => {
         if (!user1) return;
@@ -70,14 +73,29 @@ const Navbar = () => {
                         {user1 ? (
                             <>
                                 <li className="nav-item">
-                                    <Link to="/chat" className="nav-link">
-                                        Chat
-                                        {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
+                                    <Link className="nav-link" to={`/profile/${user1}`}>
+                                        {user?.photoUrl ? (
+                                            <img
+                                                src={user.photoUrl}
+                                                alt="Profile"
+                                                style={{
+                                                    width: "40px",
+                                                    height: "40px",
+                                                    borderRadius: "50%",
+                                                    objectFit: "cover",
+                                                    display: "block",
+                                                    margin: "0 auto"
+                                                }}
+                                            />
+                                        ) : (
+                                            <span className="placeholder-avatar">👤</span> // Default placeholder
+                                        )}
                                     </Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to={`/profile/${user1}`}>
-                                        Profile
+                                    <Link to="/chat" className="nav-link">
+                                        Chat
+                                        {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                     </Link>
                                 </li>
                                 <li className="nav-item">
