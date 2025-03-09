@@ -23,3 +23,19 @@
     border-radius: 30px;
     padding: 8px;
 }
+
+.red-dot {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;  /* Move higher */
+    right: -2px; /* Shift more to the right */
+}
+
+.nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+}

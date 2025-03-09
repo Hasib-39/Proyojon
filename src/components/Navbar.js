@@ -1,43 +1,58 @@
-import { signOut } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/auth';
-import { auth, db } from '../firebaseConfig';
-import '../styles/Navbar.css';
+import { signOut } from "firebase/auth";
+import { doc, updateDoc, collection, query, where, onSnapshot } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { auth, db } from "../firebaseConfig";
+import "../styles/Navbar.css";
 
 const Navbar = () => {
-    const { user, unread } = useContext(AuthContext);  // Access user and unread from context
+    const [unreadCount, setUnreadCount] = useState(0);
+    const user1 = auth.currentUser?.uid; // Get the user UID
     const navigate = useNavigate();
 
-    console.log('User in Navbar:', user); // Debugging log
+    useEffect(() => {
+        if (!user1) return;
+
+        const msgRef = collection(db, "messages");
+        const q = query(msgRef, where("users", "array-contains", user1));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            let count = 0;
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if (data.lastSender !== user1 && data.lastUnread === true) {
+                    count++;
+                }
+            });
+
+            setUnreadCount(count);
+        });
+
+        return () => unsubscribe();
+    }, [user1]);
+
+    console.log("User in Navbar:", user1); // Debugging log
 
     const handleSignout = async () => {
-        if (user) {
-            // Update user doc
-            await updateDoc(doc(db, 'users', user.uid), {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            await updateDoc(doc(db, "users", currentUser.uid), {
                 isOnline: false,
             });
-            // Logout
             await signOut(auth);
-            // Navigate to login
             navigate("/auth/login");
         }
     };
 
     const handleLogin = () => {
-        navigate('/auth/login');  // Navigate to the login page
+        navigate("/auth/login");
     };
 
     return (
         <nav className="navbar navbar-expand-md bg-light navbar-light sticky-top shadow-sm">
             <div className="container-fluid">
                 <Link className="navbar-brand d-flex align-items-center" to="/">
-                    <img
-                        src="/প্রয়োজন_Arin.png"
-                        alt="Logo"
-                        className="logo-image"
-                    />
+                    <img src="/প্রয়োজন_Arin.png" alt="Logo" className="logo-image" />
                 </Link>
                 <button
                     className="navbar-toggler"
@@ -52,21 +67,16 @@ const Navbar = () => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                        {user ? (
+                        {user1 ? (
                             <>
                                 <li className="nav-item">
-                                    <Link className="nav-link position-relative" to="/chat">
+                                    <Link to="/chat" className="nav-link">
                                         Chat
-                                        {/* Safeguard unread before accessing length */}
-                                        {unread && unread.length ? (
-                                            <span className="position-absolute top-10 start-90 translate-middle p-1 bg-danger border border-light rounded-circle">
-                                                <span className="visually-hidden">New Alerts</span>
-                                            </span>
-                                        ) : null}
+                                        {unreadCount > 0 && <span className="red-dot"></span>}
                                     </Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to={`/profile/${user.uid}`}>
+                                    <Link className="nav-link" to={`/profile/${user1}`}>
                                         Profile
                                     </Link>
                                 </li>
