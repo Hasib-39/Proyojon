@@ -38,6 +38,7 @@ const Chat = () => {
   const currentChatIdRef = useRef(null);
 
   const [unreadCount, setUnreadCount] = useState(0);
+  const [userUnreadCounts, setUserUnreadCounts] = useState({}); // Track unread counts by chat
 
   const getUnreadMessagesCount = async () => {
     if (!user1) return;
@@ -48,17 +49,28 @@ const Chat = () => {
   
       const msgsSnap = await getDocs(q);
       let count = 0;
+      const userCounts = {};
   
       msgsSnap.forEach((doc) => {
         const data = doc.data();
         if (data.lastSender !== user1 && data.lastUnread === true) {
           count++;
+          
+          // Extract the user ID from the chat ID
+          const chatParts = doc.id.split('.');
+          const otherUserId = chatParts.find(id => id !== user1);
+          const adId = chatParts[2]; // Assuming adId is always the third part
+          
+          // Create a unique key for this chat
+          const chatKey = `${otherUserId}-${adId}`;
+          
+          // Increment count for this user/ad combo
+          userCounts[chatKey] = (userCounts[chatKey] || 0) + 1;
         }
       });
   
-      setUnreadCount(count); // Update local state
-      // Update global state (e.g., AuthContext) so Navbar can use it
-      // setGlobalUnreadCount(count); // Uncomment if using Context or Redux
+      setUnreadCount(count); // Update total unread count
+      setUserUnreadCounts(userCounts); // Update counts per chat
     } catch (error) {
       console.error("Error fetching unread messages:", error);
     }
@@ -145,6 +157,8 @@ const Chat = () => {
         await updateDoc(doc(db, "messages", id), {
           lastUnread: false,
         });
+        // Trigger a refresh of unread counts
+        getUnreadMessagesCount();
       }
     }
     return () => unsub();
@@ -191,6 +205,18 @@ const Chat = () => {
         setMsgs(msgs);
       }
     });
+    
+    // Mark messages as read when opening this chat
+    const docSnap = await getDoc(doc(db, "messages", chatId));
+    if (docSnap.exists()) {
+      if (docSnap.data().lastSender !== user1 && docSnap.data().lastUnread) {
+        await updateDoc(doc(db, "messages", chatId), {
+          lastUnread: false,
+        });
+        // Refresh unread counts
+        getUnreadMessagesCount();
+      }
+    }
     
     return () => {
       unsubAd();
@@ -294,6 +320,14 @@ const Chat = () => {
     }
   };
 
+  // Helper function to get unread count for a specific user/ad combination
+  const getUnreadCountForUser = (user) => {
+    if (!user || !user.ad || !user.other) return 0;
+    
+    const chatKey = `${user.other.uid}-${user.ad.adId}`;
+    return userUnreadCounts[chatKey] || 0;
+  };
+
   return (
     <div className="row g-0">
       <div className="headline">Chats</div>
@@ -306,6 +340,7 @@ const Chat = () => {
             chat={chat}
             online={online}
             user1={user1}
+            unreadCount={getUnreadCountForUser(user)}
           />
         ))}
       </div>
