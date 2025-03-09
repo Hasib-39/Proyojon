@@ -22,6 +22,7 @@ import { auth, db, storage } from "../firebaseConfig";
 import useSnapshot from "../utils/useSnapshot";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../styles/Profile.css";
 
 const categories = ["Stationaries", "Books", "Clothes", "Electronics", "Furniture","Vehicles & Parts","Games & Hobbies" ,"Miscellaneous"];
 
@@ -240,7 +241,7 @@ const Profile = () => {
       </div>
       <div className="col-sm-10 col-md-9">
         <h3>{user.name}</h3>
-        <div className="position-relative">
+        {/* <div className="position-relative">
           <FaBell
             size={30}
             onClick={toggleDropdown} // Toggle the dropdown when clicked
@@ -261,12 +262,56 @@ const Profile = () => {
               </ul>
             </div>
           )}
-        </div>
+        </div> */}
+<div className="position-relative">
+  <div className="tooltip-container" style={{ position: "absolute", right: "20px", top: "25px" }}>
+    <FaBell
+      size={30}
+      onClick={toggleDropdown}
+      style={{ 
+        cursor: "pointer", 
+        color: "maroon",
+      }}
+    />
+    <span className="custom-tooltip">Click here</span>
+  </div>
+  {filteredAds.length > 0 && (
+    <span
+      className="badge bg-danger"
+      style={{
+        position: "absolute",
+        top: "10px", /* Moved significantly higher */
+        right: "10px",
+        padding: "0.2rem 0.5rem",
+        fontSize: "0.8rem",
+        borderRadius: "50%",
+        zIndex: "10" 
+      }}
+    >
+      {filteredAds.length}
+    </span>
+  )}
+  {dropdownVisible && (
+    <div className="dropdown-menu show" style={{ position: "absolute", top: "60px", right: "20px", width: "300px", maxHeight: "300px", overflowY: "auto" }}>
+      <ul className="list-group">
+        {filteredAds.length > 0 ? (
+          filteredAds.map((ad) => (
+            <li key={ad.adId} className="list-group-item">
+              <AdCard ad={ad} />
+            </li>
+          ))
+        ) : (
+          <li className="list-group-item">No ads found for your interests.</li>
+        )}
+      </ul>
+    </div>
+  )}
+</div>
         <hr />
         {ads.length ? (
-          <h4>Published Ads</h4>
+          <h4>Published Posts</h4>
         ) : (
-          <h4>There are no ads published by this user</h4>
+          <h4>There are no posts published by this user</h4>
         )}
         <div className="row">
           {ads?.map((ad) => (
