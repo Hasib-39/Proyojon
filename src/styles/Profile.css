@@ -1,0 +1,44 @@
+/* Custom tooltip styles */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip-container .custom-tooltip {
+    visibility: hidden;
+    width: 80px;
+    background-color: #555;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+    
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -40px;
+    
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  /* Tooltip arrow */
+  .tooltip-container .custom-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  /* Show tooltip on hover */
+  .tooltip-container:hover .custom-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
