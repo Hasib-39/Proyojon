@@ -36,6 +36,46 @@ const Chat = () => {
   const location = useLocation();
   const user1 = auth.currentUser?.uid;
   const currentChatIdRef = useRef(null);
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const getUnreadMessagesCount = async () => {
+    if (!user1) return;
+  
+    try {
+      const msgRef = collection(db, "messages");
+      const q = query(msgRef, where("users", "array-contains", user1));
+  
+      const msgsSnap = await getDocs(q);
+      let count = 0;
+  
+      msgsSnap.forEach((doc) => {
+        const data = doc.data();
+        if (data.lastSender !== user1 && data.lastUnread === true) {
+          count++;
+        }
+      });
+  
+      setUnreadCount(count); // Update local state
+      // Update global state (e.g., AuthContext) so Navbar can use it
+      // setGlobalUnreadCount(count); // Uncomment if using Context or Redux
+    } catch (error) {
+      console.error("Error fetching unread messages:", error);
+    }
+  };
+  
+  useEffect(() => {
+    if (user1) {
+      getUnreadMessagesCount(); // Initial Fetch
+      const unsubscribe = onSnapshot(collection(db, "messages"), () => {
+        getUnreadMessagesCount(); // Real-time updates
+      });
+  
+      return () => unsubscribe();
+    }
+  }, [user1]);
+  
+
   
   const deleteConversation = async () => {
     if (!chat) return;
