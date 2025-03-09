@@ -1,19 +1,19 @@
 /* Import Inter font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-.logo-image{
+.logo-image {
     width: 150px;
     height: 80px;
     object-fit: contain;
 }
 
-.nav-item{
+.nav-item {
     font-family: 'Inter';
     padding: 8px;
-    font-weight: semi-bold;
+    font-weight: 600;
 }
 
-.logout-btn{
+.logout-btn {
     font-family: 'Inter';
     background-color: rgb(224, 11, 11);
     border: none;
@@ -24,18 +24,49 @@
     padding: 8px;
 }
 
-.red-dot {
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    border-radius: 50%;
+/* Replace red-dot with unread-badge */
+.unread-badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 20px;
+    height: 20px;
+    background-color: #e60000;
+    color: white;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
     position: absolute;
-    top: 2px;  /* Move higher */
-    right: -2px; /* Shift more to the right */
+    top: -5px;
+    right: -10px;
+    padding: 0 5px;
 }
 
 .nav-link {
     position: relative;
     display: flex;
     align-items: center;
+}
+
+/* Additional styles for the User component */
+.message_content_with_badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.unread-counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 20px;
+    height: 20px;
+    background-color: #e60000;
+    color: white;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 5px;
+    padding: 0 5px;
 }

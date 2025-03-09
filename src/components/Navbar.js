@@ -72,7 +72,7 @@ const Navbar = () => {
                                 <li className="nav-item">
                                     <Link to="/chat" className="nav-link">
                                         Chat
-                                        {unreadCount > 0 && <span className="red-dot"></span>}
+                                        {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                     </Link>
                                 </li>
                                 <li className="nav-item">
