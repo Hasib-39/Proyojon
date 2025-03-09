@@ -3,15 +3,21 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 const useSnapshot = (collection, docId) => {
-  const [val, setVal] = useState();
+  const [val, setVal] = useState(null); // Default state to prevent undefined errors
 
   useEffect(() => {
-    const docRef = doc(db, collection, docId);
+    if (!docId) {
+      setVal(null); // Prevent Firestore from being queried with an invalid docId
+      return;
+    }
 
-    const unsub = onSnapshot(docRef, (doc) => setVal(doc.data()));
+    const docRef = doc(db, collection, docId);
+    const unsub = onSnapshot(docRef, (docSnap) => {
+      setVal(docSnap.exists() ? docSnap.data() : null);
+    });
 
     return () => unsub();
-  }, []);
+  }, [collection, docId]); // Re-run when collection or docId changes
 
   return { val };
 };
