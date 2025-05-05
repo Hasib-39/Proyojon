@@ -5,7 +5,10 @@
 
 ### 🌍 A Platform for Reusing, Recycling, and Reducing Waste
 
-**Proyojon** is a web platform designed to encourage sustainable living by allowing users to donate items they no longer need and help others find items they could use. By promoting reuse, recycling, and waste reduction, **Proyojon** aims to contribute to a greener and more sustainable future.
+**Proyojon** is a web platform designed to encourage sustainable living by allowing users to donate or sell items they no longer need and help others find items they could use. By promoting reuse, recycling, and waste reduction, **Proyojon** aims to contribute to a greener and more sustainable future.
+
+### Bug Report Link
+https://docs.google.com/spreadsheets/d/1harbDEPHIumHVkVqE37eZfcFrlQfv5EC8Kszk3fwtuE/edit?fbclid=IwY2xjawKFKfBleHRuA2FlbQIxMABicmlkETFTTDVEeWM2RVI1Mk5wVUtBAR5WCKckJ40e0zQ3mOxlp3S-Is9g-PXFUuu2eDmOw4UNmhRhHvsEw8QdCZh2Uw_aem_tTY6OCJS3v46GEv6WguFNQ&gid=1974614187#gid=1974614187
 
 ## 🚀 Features
 
